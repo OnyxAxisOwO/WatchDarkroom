@@ -110,11 +110,10 @@ npm install
 
 ---
 
-## 👥 作者与交流
+## 👥 作者与仓库
 
 - **作者**：[OnyxAxis](https://onyxaxis.org)
 - **GitHub 仓库**：[OnyxAxisOwO/WatchDarkroom](https://github.com/OnyxAxisOwO/WatchDarkroom)
-- **交流 QQ 群**：`628544171`
 
 ---
 

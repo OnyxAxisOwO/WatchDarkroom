@@ -18,9 +18,6 @@
       <text class="about-row">作者：OnyxAxis</text>
       <text class="about-url">onyxaxis.org</text>
 
-      <text class="about-row">交流 QQ 群</text>
-      <text class="about-url">628544171</text>
-
       <div class="s-row" @click="goSysinfo">
         <text class="s-row-label">设备与系统信息</text>
         <text class="s-row-sub">›</text>
