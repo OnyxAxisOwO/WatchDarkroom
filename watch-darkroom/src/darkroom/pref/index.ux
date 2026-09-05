@@ -1,0 +1,72 @@
+<template>
+  <div class="s-root">
+    <scroll class="s-body" scroll-y="true">
+      <text class="s-title">游戏偏好</text>
+
+      <div class="s-row" @click="go('darkroom/theme')">
+        <text class="s-row-label">配色主题</text>
+        <text class="s-row-sub">{{themeName}} ›</text>
+      </div>
+
+      <div class="s-row" @click="go('darkroom/speed')">
+        <text class="s-row-label">游戏倍速</text>
+        <text class="s-row-sub">{{speedLabel}} ›</text>
+      </div>
+
+      <div class="s-row" @click="go('darkroom/commute')">
+        <text class="s-row-label">资源爆率</text>
+        <text class="s-row-sub">{{dropRateLabel}} ›</text>
+      </div>
+
+      <div class="s-back" @click="back">
+        <text class="s-back-text">返回</text>
+      </div>
+    </scroll>
+  </div>
+</template>
+
+<script>
+  import router from '@system.router'
+  import storage from '@system.storage'
+  import { THEMES, SPEEDS } from '../themes.js'
+
+  export default {
+    private: {
+      themeName: THEMES[0].name,
+      speedLabel: '1.0x',
+      dropRateLabel: '1.0x'
+    },
+    onShow() {
+      var self = this
+      storage.get({
+        key: 'darkroom_theme',
+        success: function (v) {
+          var i = parseInt(v, 10)
+          if (!isNaN(i) && THEMES[i]) self.themeName = THEMES[i].name
+        }
+      })
+      storage.get({
+        key: 'darkroom_speed',
+        success: function (v) {
+          var s = parseFloat(v)
+          for (var i = 0; i < SPEEDS.length; i++) {
+            if (SPEEDS[i].value === s) { self.speedLabel = SPEEDS[i].label; return }
+          }
+        }
+      })
+      storage.get({
+        key: 'darkroom_droprate',
+        success: function (v) {
+          var s = parseFloat(v)
+          if (!isNaN(s) && s > 0) self.dropRateLabel = s.toFixed(1) + 'x'
+        }
+      })
+    },
+    go(uri) { router.push({ uri: uri }) },
+    back() { router.back() }
+  }
+</script>
+
+<style lang="css">
+  @import '../settings.css';
+</style>

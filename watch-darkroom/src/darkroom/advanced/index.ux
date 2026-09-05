@@ -1,0 +1,52 @@
+<template>
+  <div class="s-root">
+    <scroll class="s-body" scroll-y="true">
+      <text class="s-title">高级与调试</text>
+
+      <text class="s-grp">辅助与调测</text>
+      <div class="s-row" @click="go('darkroom/cheat')">
+        <text class="s-row-label s-danger">作弊小键盘</text>
+        <text class="s-row-sub">修改数值 ›</text>
+      </div>
+
+      <div class="s-row" @click="go('darkroom/dev')">
+        <text class="s-row-label s-danger">开发者模式</text>
+        <text class="s-row-sub">功能直通 ›</text>
+      </div>
+
+      <text class="s-grp">系统与性能</text>
+      <div class="s-row" @click="go('darkroom/bench')">
+        <text class="s-row-label">性能跑分</text>
+        <text class="s-row-sub">算力测试 ›</text>
+      </div>
+
+      <div class="s-row" @click="go('darkroom/sysinfo')">
+        <text class="s-row-label">系统信息</text>
+        <text class="s-row-sub">硬件参数 ›</text>
+      </div>
+
+      <text class="s-grp">数据管理</text>
+      <div class="s-row" @click="go('darkroom/reset')">
+        <text class="s-row-label s-danger">重置游戏数据</text>
+        <text class="s-row-sub">清除存档 ›</text>
+      </div>
+
+      <div class="s-back" @click="back">
+        <text class="s-back-text">返回</text>
+      </div>
+    </scroll>
+  </div>
+</template>
+
+<script>
+  import router from '@system.router'
+
+  export default {
+    go(uri) { router.push({ uri: uri }) },
+    back() { router.back() }
+  }
+</script>
+
+<style lang="css">
+  @import '../settings.css';
+</style>

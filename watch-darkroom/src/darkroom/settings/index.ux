@@ -3,54 +3,24 @@
     <scroll class="s-body" scroll-y="true">
       <text class="s-title">设置</text>
 
-      <div class="s-row" @click="go('darkroom/theme')">
-        <text class="s-row-label">配色主题</text>
-        <text class="s-row-sub">{{themeName}} ›</text>
-      </div>
-
-      <div class="s-row" @click="go('darkroom/speed')">
-        <text class="s-row-label">游戏倍速</text>
-        <text class="s-row-sub">{{speedLabel}} ›</text>
-      </div>
-
-      <div class="s-row" @click="go('darkroom/commute')">
-        <text class="s-row-label">通勤设置</text>
-        <text class="s-row-sub">爆率 ›</text>
-      </div>
-
-      <div class="s-row" @click="go('darkroom/cheat')">
-        <text class="s-row-label s-danger">作弊设置</text>
-        <text class="s-row-sub">›</text>
+      <div class="s-row" @click="go('darkroom/pref')">
+        <text class="s-row-label">游戏偏好</text>
+        <text class="s-row-sub">{{prefSummary}} ›</text>
       </div>
 
       <div class="s-row" @click="go('darkroom/guide')">
         <text class="s-row-label">游戏攻略</text>
-        <text class="s-row-sub">›</text>
+        <text class="s-row-sub">玩法指南 ›</text>
       </div>
 
-      <div class="s-row" @click="go('darkroom/bench')">
-        <text class="s-row-label">性能跑分</text>
-        <text class="s-row-sub">›</text>
-      </div>
-
-      <div class="s-row" @click="go('darkroom/sysinfo')">
-        <text class="s-row-label">系统信息</text>
-        <text class="s-row-sub">›</text>
+      <div class="s-row" @click="go('darkroom/advanced')">
+        <text class="s-row-label">高级与调试</text>
+        <text class="s-row-sub">作弊/开发/工具 ›</text>
       </div>
 
       <div class="s-row" @click="go('darkroom/about')">
-        <text class="s-row-label">关于</text>
-        <text class="s-row-sub">›</text>
-      </div>
-
-      <div class="s-row" @click="go('darkroom/dev')">
-        <text class="s-row-label s-danger">开发者设置</text>
-        <text class="s-row-sub">仅测试 ›</text>
-      </div>
-
-      <div class="s-row" @click="go('darkroom/reset')">
-        <text class="s-row-label s-danger">重置游戏数据</text>
-        <text class="s-row-sub">›</text>
+        <text class="s-row-label">关于小黑屋</text>
+        <text class="s-row-sub">{{versionName}} ›</text>
       </div>
 
       <div class="s-back" @click="back">
@@ -63,20 +33,25 @@
 <script>
   import router from '@system.router'
   import storage from '@system.storage'
+  import manifest from '../../manifest.json'
   import { THEMES, SPEEDS } from '../themes.js'
 
   export default {
     private: {
       themeName: THEMES[0].name,
-      speedLabel: '1.0x'
+      speedLabel: '1.0x',
+      prefSummary: THEMES[0].name + ' · 1.0x',
+      versionName: manifest.versionName
     },
     onShow() {
       var self = this
+      self.versionName = manifest.versionName
       storage.get({
         key: 'darkroom_theme',
         success: function (v) {
           var i = parseInt(v, 10)
           if (!isNaN(i) && THEMES[i]) self.themeName = THEMES[i].name
+          self.updateSummary()
         }
       })
       storage.get({
@@ -84,10 +59,17 @@
         success: function (v) {
           var s = parseFloat(v)
           for (var i = 0; i < SPEEDS.length; i++) {
-            if (SPEEDS[i].value === s) { self.speedLabel = SPEEDS[i].label; return }
+            if (SPEEDS[i].value === s) {
+              self.speedLabel = SPEEDS[i].label
+              break
+            }
           }
+          self.updateSummary()
         }
       })
+    },
+    updateSummary() {
+      this.prefSummary = this.themeName + ' · ' + this.speedLabel
     },
     go(uri) { router.push({ uri: uri }) },
     back() { router.back() }

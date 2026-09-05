@@ -76,3 +76,11 @@
 .s-danger {
   color: #e05050;
 }
+
+.s-grp {
+  color: #888888;
+  font-size: 22px;
+  margin-top: 14px;
+  margin-bottom: 8px;
+  padding-left: 4px;
+}

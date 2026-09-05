@@ -21,6 +21,11 @@
       <text class="about-row">交流 QQ 群</text>
       <text class="about-url">628544171</text>
 
+      <div class="s-row" @click="goSysinfo">
+        <text class="s-row-label">设备与系统信息</text>
+        <text class="s-row-sub">›</text>
+      </div>
+
       <div class="s-back" @click="back">
         <text class="s-back-text">返回</text>
       </div>
@@ -35,6 +40,9 @@
   export default {
     private: {
       version: manifest.versionName
+    },
+    goSysinfo() {
+      router.push({ uri: 'darkroom/sysinfo' })
     },
     back() { router.back() }
   }

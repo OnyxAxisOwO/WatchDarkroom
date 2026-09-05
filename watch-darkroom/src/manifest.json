@@ -1,8 +1,8 @@
 {
   "package": "org.onyxaxis.adr",
   "name": "小黑屋",
-  "versionName": "v2026.9.5.10.34.42",
-  "versionCode": 1788575682,
+  "versionName": "v2026.9.5.10.50.5",
+  "versionCode": 1788576605,
   "minPlatformVersion": 1000,
   "icon": "/common/icon.png",
   "deviceTypeList": [
@@ -30,6 +30,12 @@
         "component": "index"
       },
       "darkroom/settings": {
+        "component": "index"
+      },
+      "darkroom/pref": {
+        "component": "index"
+      },
+      "darkroom/advanced": {
         "component": "index"
       },
       "darkroom/theme": {
