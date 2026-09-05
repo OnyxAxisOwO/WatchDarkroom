@@ -1,30 +1,30 @@
 <template>
-  <div class="s-root">
+  <div class="s-root" style="background-color: {{theme.bg}};">
     <scroll class="s-body" scroll-y="true">
-      <text class="s-title">设置</text>
+      <text class="s-title" style="color: {{theme.text}};">设置</text>
 
-      <div class="s-row" @click="go('darkroom/pref')">
-        <text class="s-row-label">游戏偏好</text>
-        <text class="s-row-sub">{{prefSummary}} ›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="go('darkroom/pref')">
+        <text class="s-row-label" style="color: {{theme.text}};">游戏偏好</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">{{prefSummary}} ›</text>
       </div>
 
-      <div class="s-row" @click="go('darkroom/guide')">
-        <text class="s-row-label">游戏攻略</text>
-        <text class="s-row-sub">玩法指南 ›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="go('darkroom/guide')">
+        <text class="s-row-label" style="color: {{theme.text}};">游戏攻略</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">玩法指南 ›</text>
       </div>
 
-      <div class="s-row" @click="go('darkroom/advanced')">
-        <text class="s-row-label">高级与调试</text>
-        <text class="s-row-sub">作弊/开发/工具 ›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="go('darkroom/advanced')">
+        <text class="s-row-label" style="color: {{theme.text}};">高级与调试</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">作弊/开发/工具 ›</text>
       </div>
 
-      <div class="s-row" @click="go('darkroom/about')">
-        <text class="s-row-label">关于小黑屋</text>
-        <text class="s-row-sub">{{versionName}} ›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="go('darkroom/about')">
+        <text class="s-row-label" style="color: {{theme.text}};">关于小黑屋</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">{{versionName}} ›</text>
       </div>
 
-      <div class="s-back" @click="back">
-        <text class="s-back-text">返回游戏</text>
+      <div class="s-back" style="border-color: {{theme.btnBorder}};" @click="back">
+        <text class="s-back-text" style="color: {{theme.dim}};">返回游戏</text>
       </div>
     </scroll>
   </div>
@@ -34,10 +34,11 @@
   import router from '@system.router'
   import storage from '@system.storage'
   import manifest from '../../manifest.json'
-  import { THEMES, SPEEDS } from '../themes.js'
+  import { THEMES, SPEEDS, applyTheme } from '../themes.js'
 
   export default {
     private: {
+      theme: THEMES[0],
       themeName: THEMES[0].name,
       speedLabel: '1.0x',
       prefSummary: THEMES[0].name + ' · 1.0x',
@@ -46,13 +47,9 @@
     onShow() {
       var self = this
       self.versionName = manifest.versionName
-      storage.get({
-        key: 'darkroom_theme',
-        success: function (v) {
-          var i = parseInt(v, 10)
-          if (!isNaN(i) && THEMES[i]) self.themeName = THEMES[i].name
-          self.updateSummary()
-        }
+      applyTheme(this, function (t) {
+        self.themeName = t.name
+        self.updateSummary()
       })
       storage.get({
         key: 'darkroom_speed',

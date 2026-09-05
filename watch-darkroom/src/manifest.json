@@ -1,8 +1,8 @@
 {
   "package": "org.onyxaxis.adr",
   "name": "小黑屋",
-  "versionName": "v2026.9.5.10.51.32",
-  "versionCode": 1788576692,
+  "versionName": "v2026.9.5.10.59.26",
+  "versionCode": 1788577166,
   "minPlatformVersion": 1000,
   "icon": "/common/icon.png",
   "deviceTypeList": [

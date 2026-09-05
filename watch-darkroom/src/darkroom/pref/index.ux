@@ -1,25 +1,25 @@
 <template>
-  <div class="s-root">
+  <div class="s-root" style="background-color: {{theme.bg}};">
     <scroll class="s-body" scroll-y="true">
-      <text class="s-title">游戏偏好</text>
+      <text class="s-title" style="color: {{theme.text}};">游戏偏好</text>
 
-      <div class="s-row" @click="go('darkroom/theme')">
-        <text class="s-row-label">配色主题</text>
-        <text class="s-row-sub">{{themeName}} ›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="go('darkroom/theme')">
+        <text class="s-row-label" style="color: {{theme.text}};">配色主题</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">{{themeName}} ›</text>
       </div>
 
-      <div class="s-row" @click="go('darkroom/speed')">
-        <text class="s-row-label">游戏倍速</text>
-        <text class="s-row-sub">{{speedLabel}} ›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="go('darkroom/speed')">
+        <text class="s-row-label" style="color: {{theme.text}};">游戏倍速</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">{{speedLabel}} ›</text>
       </div>
 
-      <div class="s-row" @click="go('darkroom/commute')">
-        <text class="s-row-label">资源爆率</text>
-        <text class="s-row-sub">{{dropRateLabel}} ›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="go('darkroom/commute')">
+        <text class="s-row-label" style="color: {{theme.text}};">资源爆率</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">{{dropRateLabel}} ›</text>
       </div>
 
-      <div class="s-back" @click="back">
-        <text class="s-back-text">返回</text>
+      <div class="s-back" style="border-color: {{theme.btnBorder}};" @click="back">
+        <text class="s-back-text" style="color: {{theme.dim}};">返回</text>
       </div>
     </scroll>
   </div>
@@ -28,22 +28,19 @@
 <script>
   import router from '@system.router'
   import storage from '@system.storage'
-  import { THEMES, SPEEDS } from '../themes.js'
+  import { THEMES, SPEEDS, applyTheme } from '../themes.js'
 
   export default {
     private: {
+      theme: THEMES[0],
       themeName: THEMES[0].name,
       speedLabel: '1.0x',
       dropRateLabel: '1.0x'
     },
     onShow() {
       var self = this
-      storage.get({
-        key: 'darkroom_theme',
-        success: function (v) {
-          var i = parseInt(v, 10)
-          if (!isNaN(i) && THEMES[i]) self.themeName = THEMES[i].name
-        }
+      applyTheme(this, function (t) {
+        self.themeName = t.name
       })
       storage.get({
         key: 'darkroom_speed',

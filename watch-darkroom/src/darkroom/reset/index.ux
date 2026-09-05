@@ -1,18 +1,18 @@
 <template>
-  <div class="s-root">
+  <div class="s-root" style="background-color: {{theme.bg}};">
     <scroll class="s-body" scroll-y="true">
-      <text class="s-title s-danger">重置游戏</text>
+      <text class="s-title s-danger" style="color: {{theme.lose}};">重置游戏</text>
 
-      <text class="reset-warn">此操作会永久删除你的全部存档：火焰、资源、建筑、建造者进度等，且无法恢复。</text>
-      <text class="reset-warn">请确认你真的要重新开始。</text>
+      <text class="reset-warn" style="color: {{theme.dim}};">此操作会永久删除你的全部存档：火焰、资源、建筑、建造者进度等，且无法恢复。</text>
+      <text class="reset-warn" style="color: {{theme.text}};">请确认你真的要重新开始。</text>
 
       <div class="reset-confirm {{ready ? 'reset-ready' : ''}}" @click="confirm">
-        <text class="reset-confirm-text" if="{{!ready}}">请等待 {{count}} 秒…</text>
-        <text class="reset-confirm-text reset-confirm-on" else>确认重置（不可恢复）</text>
+        <text class="reset-confirm-text" if="{{!ready}}" style="color: {{theme.dim}};">请等待 {{count}} 秒…</text>
+        <text class="reset-confirm-text reset-confirm-on" else style="color: {{theme.lose}};">确认重置（不可恢复）</text>
       </div>
 
-      <div class="s-back" @click="back">
-        <text class="s-back-text">取消，返回</text>
+      <div class="s-back" style="border-color: {{theme.btnBorder}};" @click="back">
+        <text class="s-back-text" style="color: {{theme.dim}};">取消，返回</text>
       </div>
     </scroll>
   </div>
@@ -21,14 +21,17 @@
 <script>
   import router from '@system.router'
   import storage from '@system.storage'
+  import { THEMES, applyTheme } from '../themes.js'
 
   export default {
     private: {
+      theme: THEMES[0],
       count: 3,
       ready: false,
       done: false
     },
     onShow() {
+      applyTheme(this)
       // 每次进入页面重新开始 3 秒倒计时
       this.count = 3
       this.ready = false

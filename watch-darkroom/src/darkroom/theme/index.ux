@@ -1,8 +1,8 @@
 <template>
-  <div class="s-root">
+  <div class="s-root" style="background-color: {{theme.bg}};">
     <scroll class="s-body" scroll-y="true">
-      <text class="s-title">配色主题</text>
-      <text class="s-desc">仅改变游戏界面的背景、文字和按钮颜色。</text>
+      <text class="s-title" style="color: {{theme.text}};">配色主题</text>
+      <text class="s-desc" style="color: {{theme.dim}};">改变游戏与设置界面的背景、文字和按钮颜色。</text>
 
       <div class="s-row" for="{{item in list}}" @click="pick(item.index)"
         style="background-color: {{item.btnBg}}; border-color: {{item.btnBorder}};">
@@ -11,8 +11,8 @@
         <text else class="s-row-sub" style="color: {{item.accent}};">●</text>
       </div>
 
-      <div class="s-back" @click="back">
-        <text class="s-back-text">返回</text>
+      <div class="s-back" style="border-color: {{theme.btnBorder}};" @click="back">
+        <text class="s-back-text" style="color: {{theme.dim}};">返回</text>
       </div>
     </scroll>
   </div>
@@ -21,12 +21,13 @@
 <script>
   import router from '@system.router'
   import storage from '@system.storage'
-  import { THEMES } from '../themes.js'
+  import { THEMES, applyTheme } from '../themes.js'
 
   export default {
     private: {
       list: [],
-      current: 0
+      current: 0,
+      theme: THEMES[0]
     },
     onInit() {
       var arr = []
@@ -41,17 +42,18 @@
     },
     onShow() {
       var self = this
-      storage.get({
-        key: 'darkroom_theme',
-        success: function (v) {
-          var i = parseInt(v, 10)
-          if (!isNaN(i)) self.current = i
+      applyTheme(this, function (t) {
+        for (var i = 0; i < THEMES.length; i++) {
+          if (THEMES[i].name === t.name) {
+            self.current = i
+            break
+          }
         }
       })
     },
     pick(i) {
-      var self = this
       this.current = i
+      if (THEMES[i]) this.theme = THEMES[i]
       storage.set({ key: 'darkroom_theme', value: String(i) })
     },
     back() { router.back() }

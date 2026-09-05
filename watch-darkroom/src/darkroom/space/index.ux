@@ -1,7 +1,7 @@
 <template>
-  <div class="sp-root">
+  <div class="sp-root" style="background-color: {{theme.bg}};">
     <block if="{{!over.active}}">
-      <text class="sp-status">{{statusText}}</text>
+      <text class="sp-status" style="color: {{theme.text}};">{{statusText}}</text>
 
       <div class="field">
         <div class="field-row" for="{{row in grid}}">
@@ -10,17 +10,17 @@
       </div>
 
       <div class="sp-controls">
-        <text class="sp-key" @click="moveShip(-1)">← 左</text>
-        <text class="sp-key" @click="moveShip(1)">右 →</text>
+        <text class="sp-key" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}}; color: {{theme.text}};" @click="moveShip(-1)">← 左</text>
+        <text class="sp-key" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}}; color: {{theme.text}};" @click="moveShip(1)">右 →</text>
       </div>
     </block>
 
     <!-- 结果弹窗 -->
-    <div class="overlay" if="{{over.active}}">
-      <text class="ov-title">{{over.title}}</text>
-      <text class="ov-text">{{over.text}}</text>
-      <text if="{{over.kind === 'crash'}}" class="ov-btn" @click="retry">再试一次</text>
-      <text class="ov-btn" @click="leave">返回</text>
+    <div class="overlay" if="{{over.active}}" style="background-color: {{theme.bg}};">
+      <text class="ov-title" style="color: {{theme.accent}};">{{over.title}}</text>
+      <text class="ov-text" style="color: {{theme.text}};">{{over.text}}</text>
+      <text if="{{over.kind === 'crash'}}" class="ov-btn" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}}; color: {{theme.text}};" @click="retry">再试一次</text>
+      <text class="ov-btn" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}}; color: {{theme.text}};" @click="leave">返回</text>
     </div>
   </div>
 </template>
@@ -28,6 +28,7 @@
 <script>
   import storage from '@system.storage'
   import router from '@system.router'
+  import { THEMES, applyTheme } from '../themes.js'
 
   var SAVE_KEY = 'darkroom_save_v1'
   var W = 7
@@ -41,6 +42,7 @@
 
   export default {
     private: {
+      theme: THEMES[0],
       grid: [],
       statusText: '',
       shipX: 3,
@@ -49,6 +51,10 @@
       altitude: 0,
       asteroids: [],
       over: { active: false, kind: '', title: '', text: '' }
+    },
+
+    onShow() {
+      applyTheme(this)
     },
 
     onReady() {

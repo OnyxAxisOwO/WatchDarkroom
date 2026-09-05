@@ -1,25 +1,25 @@
 <template>
-  <div class="s-root">
+  <div class="s-root" style="background-color: {{theme.bg}};">
     <scroll class="s-body" scroll-y="true">
-      <text class="s-title">性能跑分</text>
-      <text class="s-desc">把计算切成很多小片逐步运行，避免卡住界面。测完给出本设备的算力分数（越高越快）。</text>
+      <text class="s-title" style="color: {{theme.text}};">性能跑分</text>
+      <text class="s-desc" style="color: {{theme.dim}};">把计算切成很多小片逐步运行，避免卡住界面。测完给出本设备的算力分数（越高越快）。</text>
 
-      <div class="s-row" @click="run">
-        <text class="s-row-label">{{running ? '测试中…' : '开始跑分'}}</text>
-        <text class="s-row-sub">{{state}}</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="run">
+        <text class="s-row-label" style="color: {{theme.text}};">{{running ? '测试中…' : '开始跑分'}}</text>
+        <text class="s-row-sub" style="color: {{theme.accent}};">{{state}}</text>
       </div>
 
       <block if="{{done}}">
         <div class="b-card">
-          <text class="b-score">{{score}}</text>
-          <text class="b-unit">分</text>
+          <text class="b-score" style="color: {{theme.accent}};">{{score}}</text>
+          <text class="b-unit" style="color: {{theme.dim}};">分</text>
         </div>
-        <text class="b-line">计算耗时 {{ms}} ms / 迭代 {{itersK}} 万次</text>
-        <text class="b-line">{{verdict}}</text>
+        <text class="b-line" style="color: {{theme.text}};">计算耗时 {{ms}} ms / 迭代 {{itersK}} 万次</text>
+        <text class="b-line" style="color: {{theme.dim}};">{{verdict}}</text>
       </block>
 
-      <div class="s-back" @click="back">
-        <text class="s-back-text">返回</text>
+      <div class="s-back" style="border-color: {{theme.btnBorder}};" @click="back">
+        <text class="s-back-text" style="color: {{theme.dim}};">返回</text>
       </div>
     </scroll>
   </div>
@@ -27,12 +27,14 @@
 
 <script>
   import router from '@system.router'
+  import { THEMES, applyTheme } from '../themes.js'
 
   var CHUNK = 6000      // 每片迭代数（保持每次同步爆发只有几毫秒）
   var TARGET = 240000   // 总迭代数
 
   export default {
     private: {
+      theme: THEMES[0],
       state: '点击开始',
       running: false,
       done: false,
@@ -40,6 +42,9 @@
       ms: 0,
       itersK: 0,
       verdict: ''
+    },
+    onShow() {
+      applyTheme(this)
     },
     run() {
       if (this.running) return

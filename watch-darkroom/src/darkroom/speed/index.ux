@@ -1,16 +1,17 @@
 <template>
-  <div class="s-root">
+  <div class="s-root" style="background-color: {{theme.bg}};">
     <scroll class="s-body" scroll-y="true">
-      <text class="s-title">游戏倍速</text>
-      <text class="s-desc">倍速会加快游戏内的时间流速：火焰衰减、温度变化、建造者推进、冷却恢复等都会按所选倍率同步加快。手表碎片化体验下，调高倍速能更快推进进度。</text>
+      <text class="s-title" style="color: {{theme.text}};">游戏倍速</text>
+      <text class="s-desc" style="color: {{theme.dim}};">倍速会加快游戏内的时间流速：火焰衰减、温度变化、建造者推进、冷却恢复等都会按所选倍率同步加快。手表碎片化体验下，调高倍速能更快推进进度。</text>
 
-      <div class="s-row" for="{{item in list}}" @click="pick(item.value)">
-        <text class="s-row-label">{{item.label}}</text>
-        <text if="{{item.value === current}}" class="s-check">✓</text>
+      <div class="s-row" for="{{item in list}}" @click="pick(item.value)"
+        style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};">
+        <text class="s-row-label" style="color: {{theme.text}};">{{item.label}}</text>
+        <text if="{{item.value === current}}" class="s-check" style="color: {{theme.accent}};">✓</text>
       </div>
 
-      <div class="s-back" @click="back">
-        <text class="s-back-text">返回</text>
+      <div class="s-back" style="border-color: {{theme.btnBorder}};" @click="back">
+        <text class="s-back-text" style="color: {{theme.dim}};">返回</text>
       </div>
     </scroll>
   </div>
@@ -19,15 +20,17 @@
 <script>
   import router from '@system.router'
   import storage from '@system.storage'
-  import { SPEEDS } from '../themes.js'
+  import { SPEEDS, THEMES, applyTheme } from '../themes.js'
 
   export default {
     private: {
+      theme: THEMES[0],
       list: SPEEDS,
       current: 1.0
     },
     onShow() {
       var self = this
+      applyTheme(this)
       storage.get({
         key: 'darkroom_speed',
         success: function (v) {

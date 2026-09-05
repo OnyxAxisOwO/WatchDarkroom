@@ -1,5 +1,5 @@
 <template>
-  <div class="s-root">
+  <div class="s-root" style="background-color: {{theme.bg}};">
     <scroll class="s-body" scroll-y="true">
       <text class="s-title s-danger">开发者设置</text>
 
@@ -7,67 +7,67 @@
         <text class="warn-text">注意：本页仅用于开发与测试，会直接改写存档、跳过正常流程，可能导致存档异常。普通玩家请勿使用。</text>
       </div>
 
-      <text class="s-desc">{{status}}</text>
+      <text class="s-desc" style="color: {{theme.dim}};">{{status}}</text>
 
-      <div class="s-row" @click="readyBuilder">
-        <text class="s-row-label">点燃并就绪建造者</text>
-        <text class="s-row-sub">›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="readyBuilder">
+        <text class="s-row-label" style="color: {{theme.text}};">点燃并就绪建造者</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">›</text>
       </div>
-      <div class="s-row" @click="giveResources">
-        <text class="s-row-label">资源大礼包</text>
-        <text class="s-row-sub">›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="giveResources">
+        <text class="s-row-label" style="color: {{theme.text}};">资源大礼包</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">›</text>
       </div>
-      <div class="s-row" @click="unlockBuildings">
-        <text class="s-row-label">解锁全部建筑 + 人口</text>
-        <text class="s-row-sub">›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="unlockBuildings">
+        <text class="s-row-label" style="color: {{theme.text}};">解锁全部建筑 + 人口</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">›</text>
       </div>
-      <div class="s-row" @click="addPop">
-        <text class="s-row-label">人口 +10</text>
-        <text class="s-row-sub">›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="addPop">
+        <text class="s-row-label" style="color: {{theme.text}};">人口 +10</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">›</text>
       </div>
-      <div class="s-row" @click="unlockWild">
-        <text class="s-row-label">解锁探索 + 装备</text>
-        <text class="s-row-sub">›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="unlockWild">
+        <text class="s-row-label" style="color: {{theme.text}};">解锁探索 + 装备</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">›</text>
       </div>
-      <div class="s-row" @click="giveWeapons">
-        <text class="s-row-label">全部武器 + 弹药</text>
-        <text class="s-row-sub">›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="giveWeapons">
+        <text class="s-row-label" style="color: {{theme.text}};">全部武器 + 弹药</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">›</text>
       </div>
-      <div class="s-row" @click="testSpace">
-        <text class="s-row-label">测试小游戏（起飞）</text>
-        <text class="s-row-sub">›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="testSpace">
+        <text class="s-row-label" style="color: {{theme.text}};">测试小游戏（起飞）</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">›</text>
       </div>
-      <div class="s-row" @click="testScenes">
-        <text class="s-row-label">测试特殊场景</text>
-        <text class="s-row-sub">事件/地标/战斗 ›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="testScenes">
+        <text class="s-row-label" style="color: {{theme.text}};">测试特殊场景</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">事件/地标/战斗 ›</text>
       </div>
-      <div class="s-row" @click="testOutfit">
-        <text class="s-row-label">出征补给界面</text>
-        <text class="s-row-sub">›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="testOutfit">
+        <text class="s-row-label" style="color: {{theme.text}};">出征补给界面</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">›</text>
       </div>
-      <div class="s-row" @click="unlockFab">
-        <text class="s-row-label">解锁外星制造机 + 合金</text>
-        <text class="s-row-sub">›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="unlockFab">
+        <text class="s-row-label" style="color: {{theme.text}};">解锁外星制造机 + 合金</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">›</text>
       </div>
-      <div class="s-row" @click="maxShip">
-        <text class="s-row-label">飞船升级满级</text>
-        <text class="s-row-sub">›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="maxShip">
+        <text class="s-row-label" style="color: {{theme.text}};">飞船升级满级</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">›</text>
       </div>
-      <div class="s-row" @click="prestige">
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="prestige">
         <text class="s-row-label s-danger">重生（声望）</text>
-        <text class="s-row-sub">{{prestigeState}}</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">{{prestigeState}}</text>
       </div>
-      <div class="s-row" @click="triggerEvent">
-        <text class="s-row-label">触发随机事件</text>
-        <text class="s-row-sub">›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="triggerEvent">
+        <text class="s-row-label" style="color: {{theme.text}};">触发随机事件</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">›</text>
       </div>
-      <div class="s-row" @click="toggleFps">
-        <text class="s-row-label">显示性能测试</text>
-        <text class="s-row-sub">{{fpsState}}</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="toggleFps">
+        <text class="s-row-label" style="color: {{theme.text}};">显示性能测试</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">{{fpsState}}</text>
       </div>
 
-      <div class="s-back" @click="back">
-        <text class="s-back-text">返回</text>
+      <div class="s-back" style="border-color: {{theme.btnBorder}};" @click="back">
+        <text class="s-back-text" style="color: {{theme.dim}};">返回</text>
       </div>
     </scroll>
   </div>
@@ -76,6 +76,7 @@
 <script>
   import router from '@system.router'
   import storage from '@system.storage'
+  import { THEMES, applyTheme } from '../themes.js'
 
   var SAVE_KEY = 'darkroom_save_v1'
 
@@ -91,12 +92,14 @@
 
   export default {
     private: {
+      theme: THEMES[0],
       status: '点击任意项立即生效，返回游戏后可见。',
       fpsState: '关闭',
       prestigeState: ''
     },
     onShow() {
       var self = this
+      applyTheme(this)
       storage.get({ key: 'darkroom_showfps', success: function (v) { self.fpsState = (v === '1') ? '开启' : '关闭' } })
       storage.get({
         key: 'darkroom_save_v1',

@@ -1,21 +1,22 @@
 <template>
-  <div class="s-root">
+  <div class="s-root" style="background-color: {{theme.bg}};">
     <scroll class="s-body" scroll-y="true">
-      <text class="s-title">通勤设置</text>
+      <text class="s-title" style="color: {{theme.text}};">通勤设置</text>
 
-      <div class="warn-box">
-        <text class="warn-text">注意：调整爆率会放大资源掉落与采集产量，可能影响游戏平衡度，并带来一些 bug。想要原汁原味请保持默认。</text>
+      <div class="warn-box" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};">
+        <text class="warn-text" style="color: {{theme.dim}};">注意：调整爆率会放大资源掉落与采集产量，可能影响游戏平衡度。想要原汁原味请保持默认。</text>
       </div>
 
-      <text class="s-desc">爆率会作用于森林采集与陷阱掉落的数量。</text>
+      <text class="s-desc" style="color: {{theme.dim}};">爆率会作用于森林采集与陷阱掉落的数量。</text>
 
-      <div class="s-row" for="{{item in list}}" @click="pick(item.value)">
-        <text class="s-row-label">{{item.label}}</text>
-        <text if="{{item.value === current}}" class="s-check">✓</text>
+      <div class="s-row" for="{{item in list}}" @click="pick(item.value)"
+        style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};">
+        <text class="s-row-label" style="color: {{theme.text}};">{{item.label}}</text>
+        <text if="{{item.value === current}}" class="s-check" style="color: {{theme.accent}};">✓</text>
       </div>
 
-      <div class="s-back" @click="back">
-        <text class="s-back-text">返回</text>
+      <div class="s-back" style="border-color: {{theme.btnBorder}};" @click="back">
+        <text class="s-back-text" style="color: {{theme.dim}};">返回</text>
       </div>
     </scroll>
   </div>
@@ -24,9 +25,11 @@
 <script>
   import router from '@system.router'
   import storage from '@system.storage'
+  import { THEMES, applyTheme } from '../themes.js'
 
   export default {
     private: {
+      theme: THEMES[0],
       list: [
         { label: '默认 1.0x', value: 1.0 },
         { label: '1.2x', value: 1.2 },
@@ -37,6 +40,7 @@
     },
     onShow() {
       var self = this
+      applyTheme(this)
       storage.get({
         key: 'darkroom_droprate',
         success: function (v) {

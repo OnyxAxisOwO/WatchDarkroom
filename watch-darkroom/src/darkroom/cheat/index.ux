@@ -1,21 +1,22 @@
 <template>
-  <div class="s-root">
+  <div class="s-root" style="background-color: {{theme.bg}};">
     <scroll class="s-body" scroll-y="true">
-      <text class="s-title s-danger">作弊设置</text>
+      <text class="s-title s-danger" style="color: {{theme.lose}};">作弊设置</text>
 
-      <div class="warn-box">
-        <text class="warn-text">注意：直接修改资源数值会严重影响游戏平衡度，并可能引发 bug。请谨慎使用。</text>
+      <div class="warn-box" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};">
+        <text class="warn-text" style="color: {{theme.dim}};">注意：直接修改资源数值会严重影响游戏平衡度，并可能引发 bug。请谨慎使用。</text>
       </div>
 
-      <text class="s-desc">点击任意资源进入编辑页，用小键盘修改数量。</text>
+      <text class="s-desc" style="color: {{theme.dim}};">点击任意资源进入编辑页，用小键盘修改数量。</text>
 
-      <div class="s-row" for="{{item in list}}" @click="edit(item.key, item.name)">
-        <text class="s-row-label">{{item.name}}</text>
-        <text class="s-row-sub">{{item.value}} ›</text>
+      <div class="s-row" for="{{item in list}}" @click="edit(item.key, item.name)"
+        style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};">
+        <text class="s-row-label" style="color: {{theme.text}};">{{item.name}}</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">{{item.value}} ›</text>
       </div>
 
-      <div class="s-back" @click="back">
-        <text class="s-back-text">返回</text>
+      <div class="s-back" style="border-color: {{theme.btnBorder}};" @click="back">
+        <text class="s-back-text" style="color: {{theme.dim}};">返回</text>
       </div>
     </scroll>
   </div>
@@ -24,6 +25,7 @@
 <script>
   import router from '@system.router'
   import storage from '@system.storage'
+  import { THEMES, applyTheme } from '../themes.js'
 
   var RES = [
     { key: 'wood', name: '木头' },
@@ -37,10 +39,12 @@
 
   export default {
     private: {
+      theme: THEMES[0],
       list: []
     },
     onShow() {
       var self = this
+      applyTheme(this)
       storage.get({
         key: 'darkroom_save_v1',
         success: function (val) {

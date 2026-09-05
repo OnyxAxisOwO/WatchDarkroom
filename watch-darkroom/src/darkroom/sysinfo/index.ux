@@ -1,42 +1,42 @@
 <template>
-  <div class="s-root">
+  <div class="s-root" style="background-color: {{theme.bg}};">
     <scroll class="s-body" scroll-y="true">
-      <text class="s-title">系统信息</text>
+      <text class="s-title" style="color: {{theme.text}};">系统信息</text>
 
-      <text class="grp">设备</text>
+      <text class="grp" style="color: {{theme.accent}};">设备</text>
       <div class="kv" for="{{r in rows}}">
-        <text class="kv-k">{{r.k}}</text>
-        <text class="kv-v">{{r.v}}</text>
+        <text class="kv-k" style="color: {{theme.dim}};">{{r.k}}</text>
+        <text class="kv-v" style="color: {{theme.text}};">{{r.v}}</text>
       </div>
-      <text if="{{rows.length === 0}}" class="s-desc">{{infoNote}}</text>
+      <text if="{{rows.length === 0}}" class="s-desc" style="color: {{theme.dim}};">{{infoNote}}</text>
 
-      <text class="grp">CPU 性能</text>
+      <text class="grp" style="color: {{theme.accent}};">CPU 性能</text>
       <div class="kv">
-        <text class="kv-k">性能分</text>
-        <text class="kv-v">{{cpuScore}}</text>
+        <text class="kv-k" style="color: {{theme.dim}};">性能分</text>
+        <text class="kv-v" style="color: {{theme.accent}};">{{cpuScore}}</text>
       </div>
-      <div class="s-row" @click="runCpu">
-        <text class="s-row-label">测一下 CPU</text>
-        <text class="s-row-sub">{{cpuState}}</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="runCpu">
+        <text class="s-row-label" style="color: {{theme.text}};">测一下 CPU</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">{{cpuState}}</text>
       </div>
 
-      <text class="grp">实时占用</text>
+      <text class="grp" style="color: {{theme.accent}};">实时占用</text>
       <div class="kv">
-        <text class="kv-k">CPU 占用</text>
-        <text class="kv-v dim">平台未开放</text>
+        <text class="kv-k" style="color: {{theme.dim}};">CPU 占用</text>
+        <text class="kv-v dim" style="color: {{theme.dim}};">平台未开放</text>
       </div>
       <div class="kv">
-        <text class="kv-k">内存占用</text>
-        <text class="kv-v dim">平台未开放</text>
+        <text class="kv-k" style="color: {{theme.dim}};">内存占用</text>
+        <text class="kv-v dim" style="color: {{theme.dim}};">平台未开放</text>
       </div>
       <div class="kv">
-        <text class="kv-k">存储占用</text>
-        <text class="kv-v dim">平台未开放</text>
+        <text class="kv-k" style="color: {{theme.dim}};">存储占用</text>
+        <text class="kv-v dim" style="color: {{theme.dim}};">平台未开放</text>
       </div>
-      <text class="s-desc">Vela 快应用是沙箱环境，不开放进程级 CPU / 内存 / 存储占用接口，因此无法显示实时占用，仅能给出设备信息与 CPU 性能分。</text>
+      <text class="s-desc" style="color: {{theme.dim}};">Vela 快应用是沙箱环境，不开放进程级 CPU / 内存 / 存储占用接口，因此无法显示实时占用，仅能给出设备信息与 CPU 性能分。</text>
 
-      <div class="s-back" @click="back">
-        <text class="s-back-text">返回</text>
+      <div class="s-back" style="border-color: {{theme.btnBorder}};" @click="back">
+        <text class="s-back-text" style="color: {{theme.dim}};">返回</text>
       </div>
     </scroll>
   </div>
@@ -45,6 +45,7 @@
 <script>
   import router from '@system.router'
   import device from '@system.device'
+  import { THEMES, applyTheme } from '../themes.js'
 
   var LABELS = {
     brand: '品牌', manufacturer: '厂商', model: '型号', product: '产品',
@@ -60,6 +61,7 @@
 
   export default {
     private: {
+      theme: THEMES[0],
       rows: [],
       infoNote: '正在读取设备信息…',
       cpuScore: '未测试',
@@ -67,6 +69,7 @@
     },
     onShow() {
       var self = this
+      applyTheme(this)
       try {
         device.getInfo({
           success: function (data) { self.fill(data) },

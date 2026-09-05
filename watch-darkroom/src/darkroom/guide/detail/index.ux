@@ -1,11 +1,11 @@
 <template>
-  <div class="s-root">
+  <div class="s-root" style="background-color: {{theme.bg}};">
     <scroll class="s-body" scroll-y="true">
-      <text class="s-title">{{title}}</text>
-      <text class="g-body">{{body}}</text>
+      <text class="s-title" style="color: {{theme.text}};">{{title}}</text>
+      <text class="g-body" style="color: {{theme.text}};">{{body}}</text>
 
-      <div class="s-back" @click="back">
-        <text class="s-back-text">返回</text>
+      <div class="s-back" style="border-color: {{theme.btnBorder}};" @click="back">
+        <text class="s-back-text" style="color: {{theme.dim}};">返回</text>
       </div>
     </scroll>
   </div>
@@ -14,14 +14,19 @@
 <script>
   import router from '@system.router'
   import { GUIDE } from '../../guide.js'
+  import { THEMES, applyTheme } from '../../themes.js'
 
   export default {
     protected: {
       id: ''
     },
     private: {
+      theme: THEMES[0],
       title: '',
       body: ''
+    },
+    onShow() {
+      applyTheme(this)
     },
     onReady() {
       for (var i = 0; i < GUIDE.length; i++) {

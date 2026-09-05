@@ -1,19 +1,20 @@
 <template>
-  <div class="s-root">
+  <div class="s-root" style="background-color: {{theme.bg}};">
     <scroll class="s-body" scroll-y="true">
-      <text class="s-title">游戏攻略</text>
+      <text class="s-title" style="color: {{theme.text}};">游戏攻略</text>
 
-      <div class="warn-box">
-        <text class="warn-text">提示：查看攻略可能会破坏探索的乐趣与游戏体验。是否阅读由你决定。</text>
+      <div class="warn-box" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};">
+        <text class="warn-text" style="color: {{theme.dim}};">提示：查看攻略可能会降低探索乐趣与游戏体验。是否阅读由你决定。</text>
       </div>
 
-      <div class="s-row" for="{{item in list}}" @click="open(item.id)">
-        <text class="s-row-label">{{item.title}}</text>
-        <text class="s-row-sub">›</text>
+      <div class="s-row" for="{{item in list}}" @click="open(item.id)"
+        style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};">
+        <text class="s-row-label" style="color: {{theme.text}};">{{item.title}}</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">›</text>
       </div>
 
-      <div class="s-back" @click="back">
-        <text class="s-back-text">返回</text>
+      <div class="s-back" style="border-color: {{theme.btnBorder}};" @click="back">
+        <text class="s-back-text" style="color: {{theme.dim}};">返回</text>
       </div>
     </scroll>
   </div>
@@ -22,10 +23,15 @@
 <script>
   import router from '@system.router'
   import { GUIDE } from '../guide.js'
+  import { THEMES, applyTheme } from '../themes.js'
 
   export default {
     private: {
+      theme: THEMES[0],
       list: GUIDE
+    },
+    onShow() {
+      applyTheme(this)
     },
     open(id) {
       router.push({ uri: 'darkroom/guide/detail', params: { id: id } })

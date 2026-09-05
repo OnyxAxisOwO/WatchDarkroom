@@ -1,29 +1,29 @@
 <template>
-  <div class="s-root">
+  <div class="s-root" style="background-color: {{theme.bg}};">
     <scroll class="s-body" scroll-y="true">
-      <text class="s-title">出征补给</text>
-      <text class="s-desc">背包容量随升级提升。携带的熏肉是旅途口粮，出发时从仓库扣除。</text>
+      <text class="s-title" style="color: {{theme.text}};">出征补给</text>
+      <text class="s-desc" style="color: {{theme.dim}};">背包容量随升级提升。携带的熏肉是旅途口粮，出发时从仓库扣除。</text>
 
-      <div class="kv"><text class="kv-k">背包容量</text><text class="kv-v">{{cap}} 份</text></div>
-      <div class="kv"><text class="kv-k">饮水上限</text><text class="kv-v">{{water}}</text></div>
-      <div class="kv"><text class="kv-k">体力上限</text><text class="kv-v">{{health}}</text></div>
+      <div class="kv"><text class="kv-k" style="color: {{theme.dim}};">背包容量</text><text class="kv-v" style="color: {{theme.text}};">{{cap}} 份</text></div>
+      <div class="kv"><text class="kv-k" style="color: {{theme.dim}};">饮水上限</text><text class="kv-v" style="color: {{theme.text}};">{{water}}</text></div>
+      <div class="kv"><text class="kv-k" style="color: {{theme.dim}};">体力上限</text><text class="kv-v" style="color: {{theme.text}};">{{health}}</text></div>
 
-      <text class="grp">携带熏肉</text>
+      <text class="grp" style="color: {{theme.accent}};">携带熏肉</text>
       <div class="food-row">
-        <text class="fbtn" @click="dec">-</text>
-        <text class="fcount">{{food}} / {{maxFood}}</text>
-        <text class="fbtn" @click="inc">+</text>
+        <text class="fbtn" style="color: {{theme.text}}; background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="dec">-</text>
+        <text class="fcount" style="color: {{theme.text}};">{{food}} / {{maxFood}}</text>
+        <text class="fbtn" style="color: {{theme.text}}; background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="inc">+</text>
       </div>
 
-      <text class="grp">装备</text>
-      <text class="eq" for="{{w in gear}}">{{w}}</text>
-      <text if="{{gear.length === 0}}" class="s-desc">尚无武器护甲，建议先造些装备.</text>
+      <text class="grp" style="color: {{theme.accent}};">装备</text>
+      <text class="eq" style="color: {{theme.text}};" for="{{w in gear}}">{{w}}</text>
+      <text if="{{gear.length === 0}}" class="s-desc" style="color: {{theme.dim}};">尚无武器护甲，建议先造些装备.</text>
 
-      <div class="go-btn" @click="depart">
-        <text class="go-text">出发探索</text>
+      <div class="go-btn" style="border-color: {{theme.gain}};" @click="depart">
+        <text class="go-text" style="color: {{theme.gain}};">出发探索</text>
       </div>
-      <div class="s-back" @click="back">
-        <text class="s-back-text">返回</text>
+      <div class="s-back" style="border-color: {{theme.btnBorder}};" @click="back">
+        <text class="s-back-text" style="color: {{theme.dim}};">返回</text>
       </div>
     </scroll>
   </div>
@@ -32,17 +32,20 @@
 <script>
   import router from '@system.router'
   import storage from '@system.storage'
+  import { THEMES, applyTheme } from '../themes.js'
 
   var SAVE_KEY = 'darkroom_save_v1'
 
   export default {
     private: {
+      theme: THEMES[0],
       cap: 10, water: 10, health: 10,
       food: 0, maxFood: 0,
       gear: []
     },
     onShow() {
       var self = this
+      applyTheme(this)
       storage.get({
         key: SAVE_KEY,
         success: function (val) {

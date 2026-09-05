@@ -1,30 +1,30 @@
 <template>
-  <div class="s-root">
+  <div class="s-root" style="background-color: {{theme.bg}};">
     <scroll class="s-body" scroll-y="true">
-      <text class="s-title">关于</text>
+      <text class="s-title" style="color: {{theme.text}};">关于</text>
 
-      <text class="about-game">手表版小黑屋</text>
-      <text class="about-sub">移植自 A Dark Room（MIT）</text>
-      <text class="about-version">版本 {{version}}</text>
+      <text class="about-game" style="color: {{theme.text}};">手表版小黑屋</text>
+      <text class="about-sub" style="color: {{theme.dim}};">移植自 A Dark Room（MIT）</text>
+      <text class="about-version" style="color: {{theme.dim}};">版本 {{version}}</text>
 
       <div class="qr-wrap">
         <image class="qr" src="/common/qr.png"></image>
       </div>
-      <text class="about-link">扫码访问 GitHub 仓库</text>
-      <text class="about-url">github.com/OnyxAxisOwO/watch-darkroom</text>
+      <text class="about-link" style="color: {{theme.text}};">扫码访问 GitHub 仓库</text>
+      <text class="about-url" style="color: {{theme.accent}};">github.com/OnyxAxisOwO/watch-darkroom</text>
 
-      <div class="about-divider"></div>
+      <div class="about-divider" style="background-color: {{theme.divider}};"></div>
 
-      <text class="about-row">作者：OnyxAxis</text>
-      <text class="about-url">onyxaxis.org</text>
+      <text class="about-row" style="color: {{theme.text}};">作者：OnyxAxis</text>
+      <text class="about-url" style="color: {{theme.accent}};">onyxaxis.org</text>
 
-      <div class="s-row" @click="goSysinfo">
-        <text class="s-row-label">设备与系统信息</text>
-        <text class="s-row-sub">›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="goSysinfo">
+        <text class="s-row-label" style="color: {{theme.text}};">设备与系统信息</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">›</text>
       </div>
 
-      <div class="s-back" @click="back">
-        <text class="s-back-text">返回</text>
+      <div class="s-back" style="border-color: {{theme.btnBorder}};" @click="back">
+        <text class="s-back-text" style="color: {{theme.dim}};">返回</text>
       </div>
     </scroll>
   </div>
@@ -33,10 +33,15 @@
 <script>
   import router from '@system.router'
   import manifest from '../../manifest.json'
+  import { THEMES, applyTheme } from '../themes.js'
 
   export default {
     private: {
+      theme: THEMES[0],
       version: manifest.versionName
+    },
+    onShow() {
+      applyTheme(this)
     },
     goSysinfo() {
       router.push({ uri: 'darkroom/sysinfo' })

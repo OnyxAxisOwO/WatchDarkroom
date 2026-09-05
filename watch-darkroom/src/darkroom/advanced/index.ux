@@ -1,38 +1,38 @@
 <template>
-  <div class="s-root">
+  <div class="s-root" style="background-color: {{theme.bg}};">
     <scroll class="s-body" scroll-y="true">
-      <text class="s-title">高级与调试</text>
+      <text class="s-title" style="color: {{theme.text}};">高级与调试</text>
 
-      <text class="s-grp">辅助与调测</text>
-      <div class="s-row" @click="go('darkroom/cheat')">
-        <text class="s-row-label s-danger">作弊小键盘</text>
-        <text class="s-row-sub">修改数值 ›</text>
+      <text class="s-grp" style="color: {{theme.dim}};">辅助与调测</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="go('darkroom/cheat')">
+        <text class="s-row-label s-danger" style="color: {{theme.lose}};">作弊小键盘</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">修改数值 ›</text>
       </div>
 
-      <div class="s-row" @click="go('darkroom/dev')">
-        <text class="s-row-label s-danger">开发者模式</text>
-        <text class="s-row-sub">功能直通 ›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="go('darkroom/dev')">
+        <text class="s-row-label s-danger" style="color: {{theme.lose}};">开发者模式</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">功能直通 ›</text>
       </div>
 
-      <text class="s-grp">系统与性能</text>
-      <div class="s-row" @click="go('darkroom/bench')">
-        <text class="s-row-label">性能跑分</text>
-        <text class="s-row-sub">算力测试 ›</text>
+      <text class="s-grp" style="color: {{theme.dim}};">系统与性能</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="go('darkroom/bench')">
+        <text class="s-row-label" style="color: {{theme.text}};">性能跑分</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">算力测试 ›</text>
       </div>
 
-      <div class="s-row" @click="go('darkroom/sysinfo')">
-        <text class="s-row-label">系统信息</text>
-        <text class="s-row-sub">硬件参数 ›</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="go('darkroom/sysinfo')">
+        <text class="s-row-label" style="color: {{theme.text}};">系统信息</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">硬件参数 ›</text>
       </div>
 
-      <text class="s-grp">数据管理</text>
-      <div class="s-row" @click="go('darkroom/reset')">
-        <text class="s-row-label s-danger">重置游戏数据</text>
-        <text class="s-row-sub">清除存档 ›</text>
+      <text class="s-grp" style="color: {{theme.dim}};">数据管理</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" @click="go('darkroom/reset')">
+        <text class="s-row-label s-danger" style="color: {{theme.lose}};">重置游戏数据</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">清除存档 ›</text>
       </div>
 
-      <div class="s-back" @click="back">
-        <text class="s-back-text">返回</text>
+      <div class="s-back" style="border-color: {{theme.btnBorder}};" @click="back">
+        <text class="s-back-text" style="color: {{theme.dim}};">返回</text>
       </div>
     </scroll>
   </div>
@@ -40,8 +40,15 @@
 
 <script>
   import router from '@system.router'
+  import { THEMES, applyTheme } from '../themes.js'
 
   export default {
+    private: {
+      theme: THEMES[0]
+    },
+    onShow() {
+      applyTheme(this)
+    },
     go(uri) { router.push({ uri: uri }) },
     back() { router.back() }
   }

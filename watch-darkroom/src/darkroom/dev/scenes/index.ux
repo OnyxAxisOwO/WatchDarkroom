@@ -1,29 +1,29 @@
 <template>
-  <div class="s-root">
+  <div class="s-root" style="background-color: {{theme.bg}};">
     <scroll class="s-body" scroll-y="true">
       <text class="s-title s-danger">测试特殊场景</text>
-      <text class="s-desc">{{status}}</text>
+      <text class="s-desc" style="color: {{theme.dim}};">{{status}}</text>
 
-      <text class="grp">随机事件（设置后返回游戏触发）</text>
-      <div class="s-row" for="{{e in events}}" @click="setEvent(e.id)">
-        <text class="s-row-label">{{e.name}}</text>
-        <text class="s-row-sub">›</text>
+      <text class="grp" style="color: {{theme.accent}};">随机事件（设置后返回游戏触发）</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" for="{{e in events}}" @click="setEvent(e.id)">
+        <text class="s-row-label" style="color: {{theme.text}};">{{e.name}}</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">›</text>
       </div>
 
-      <text class="grp">地标场景（点击直接进入荒野演示）</text>
-      <div class="s-row" for="{{l in lands}}" @click="goScene(l.id)">
-        <text class="s-row-label">{{l.name}}</text>
-        <text class="s-row-sub">›</text>
+      <text class="grp" style="color: {{theme.accent}};">地标场景（点击直接进入荒野演示）</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" for="{{l in lands}}" @click="goScene(l.id)">
+        <text class="s-row-label" style="color: {{theme.text}};">{{l.name}}</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">›</text>
       </div>
 
-      <text class="grp">战斗（直接进入荒野遭遇）</text>
-      <div class="s-row" for="{{f in fights}}" @click="goScene(f.id)">
-        <text class="s-row-label">{{f.name}}</text>
-        <text class="s-row-sub">›</text>
+      <text class="grp" style="color: {{theme.accent}};">战斗（直接进入荒野遭遇）</text>
+      <div class="s-row" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};" for="{{f in fights}}" @click="goScene(f.id)">
+        <text class="s-row-label" style="color: {{theme.text}};">{{f.name}}</text>
+        <text class="s-row-sub" style="color: {{theme.dim}};">›</text>
       </div>
 
-      <div class="s-back" @click="back">
-        <text class="s-back-text">返回</text>
+      <div class="s-back" style="border-color: {{theme.btnBorder}};" @click="back">
+        <text class="s-back-text" style="color: {{theme.dim}};">返回</text>
       </div>
     </scroll>
   </div>
@@ -32,9 +32,11 @@
 <script>
   import router from '@system.router'
   import storage from '@system.storage'
+  import { THEMES, applyTheme } from '../../themes.js'
 
   export default {
     private: {
+      theme: THEMES[0],
       status: '事件需返回游戏页才会弹出；地标/战斗会直接进入荒野。',
       events: [
         { id: 'nomad', name: '游牧商人' },
@@ -65,6 +67,9 @@
         { id: 'fight2', name: '中距离敌人' },
         { id: 'fight3', name: '远距离敌人' }
       ]
+    },
+    onShow() {
+      applyTheme(this)
     },
     setEvent(id) {
       var self = this

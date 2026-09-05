@@ -1,36 +1,40 @@
 <template>
-  <div class="s-root">
+  <div class="s-root" style="background-color: {{theme.bg}};">
     <scroll class="s-body" scroll-y="true">
-      <text class="s-title">{{name}}</text>
+      <text class="s-title" style="color: {{theme.text}};">{{name}}</text>
 
-      <div class="val-box">
-        <text class="val-text">{{value}}</text>
+      <div class="val-box" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};">
+        <text class="val-text" style="color: {{theme.accent}};">{{value}}</text>
       </div>
 
       <div class="pad">
         <div class="pad-row" for="{{row in rows}}">
-          <div class="pad-key" for="{{k in row}}" @click="tap(k)">
-            <text class="pad-key-text">{{k}}</text>
+          <div class="pad-key" for="{{k in row}}" @click="tap(k)"
+            style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};">
+            <text class="pad-key-text" style="color: {{theme.text}};">{{k}}</text>
           </div>
         </div>
         <div class="pad-row">
-          <div class="pad-key" @click="clear">
-            <text class="pad-key-text">C</text>
+          <div class="pad-key" @click="clear"
+            style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};">
+            <text class="pad-key-text" style="color: {{theme.lose}};">C</text>
           </div>
-          <div class="pad-key" @click="tap('0')">
-            <text class="pad-key-text">0</text>
+          <div class="pad-key" @click="tap('0')"
+            style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};">
+            <text class="pad-key-text" style="color: {{theme.text}};">0</text>
           </div>
-          <div class="pad-key" @click="backspace">
-            <text class="pad-key-text">删</text>
+          <div class="pad-key" @click="backspace"
+            style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}};">
+            <text class="pad-key-text" style="color: {{theme.dim}};">删</text>
           </div>
         </div>
       </div>
 
-      <div class="save-btn" @click="save">
-        <text class="save-text">保存</text>
+      <div class="save-btn" style="background-color: {{theme.btnBg}}; border-color: {{theme.accent}};" @click="save">
+        <text class="save-text" style="color: {{theme.accent}};">保存</text>
       </div>
-      <div class="s-back" @click="back">
-        <text class="s-back-text">取消</text>
+      <div class="s-back" style="border-color: {{theme.btnBorder}};" @click="back">
+        <text class="s-back-text" style="color: {{theme.dim}};">取消</text>
       </div>
     </scroll>
   </div>
@@ -39,6 +43,7 @@
 <script>
   import router from '@system.router'
   import storage from '@system.storage'
+  import { THEMES, applyTheme } from '../../themes.js'
 
   export default {
     protected: {
@@ -46,11 +51,13 @@
       name: ''
     },
     private: {
+      theme: THEMES[0],
       value: '0',
       rows: [['1', '2', '3'], ['4', '5', '6'], ['7', '8', '9']]
     },
     onShow() {
       var self = this
+      applyTheme(this)
       storage.get({
         key: 'darkroom_save_v1',
         success: function (val) {
