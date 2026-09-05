@@ -1,0 +1,73 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+  release:
+    types:
+      - published
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: watch-darkroom
+        run: npm install
+
+      - name: Set executable permissions for JSC binaries
+        working-directory: watch-darkroom
+        run: chmod +x node_modules/@aiot-toolkit/jsc/lib/jsc/* 2>/dev/null || true
+
+      - name: Setup signing certificates
+        working-directory: watch-darkroom
+        run: |
+          mkdir -p sign
+          if [ -n "${{ secrets.SIGN_PRIVATE_KEY }}" ] && [ -n "${{ secrets.SIGN_CERTIFICATE }}" ]; then
+            echo "Using repository secrets for signing certificate..."
+            echo "${{ secrets.SIGN_PRIVATE_KEY }}" > sign/private.pem
+            echo "${{ secrets.SIGN_CERTIFICATE }}" > sign/certificate.pem
+          else
+            echo "Generating self-signed certificate for build..."
+            openssl req -newkey rsa:2048 -nodes -keyout sign/private.pem -x509 -days 3650 -out sign/certificate.pem -subj "/C=CN/ST=Hubei/L=Wuhan/O=WatchDarkroom/CN=WatchDarkroom"
+          fi
+
+      - name: Build Release RPK
+        working-directory: watch-darkroom
+        run: npm run release
+
+      - name: Build Debug RPK
+        working-directory: watch-darkroom
+        run: npm run build
+
+      - name: Upload RPK Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: watch-darkroom-rpk
+          path: watch-darkroom/dist/*.rpk
+
+      - name: Upload to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: watch-darkroom/dist/*.rpk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

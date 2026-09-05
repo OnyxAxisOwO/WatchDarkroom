@@ -1,13 +1,18 @@
 {
   "name": "watch-darkroom",
-  "version": "1.0.0",
+  "version": "v2026.9.5.10.34.42",
   "description": "",
   "engines": {
     "node": ">=8.10"
   },
   "scripts": {
+    "version": "node scripts/version.js",
+    "version:update": "node scripts/version.js",
+    "prestart": "node scripts/version.js",
     "start": "aiot start --watch",
+    "prebuild": "node scripts/version.js",
     "build": "aiot build",
+    "prerelease": "node scripts/version.js",
     "release": "aiot release",
     "lint": "eslint --format codeframe --fix --ext .ux,.js src/"
   },

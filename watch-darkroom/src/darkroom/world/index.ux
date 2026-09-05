@@ -1,6 +1,7 @@
 <template>
   <div class="w-root" style="background-color: {{theme.bg}};">
-   <scroll class="w-scroll" scroll-y="true">
+   <!-- 弹窗打开时整块不渲染：既避免透出底层，也省掉地图/日志的节点 -->
+   <scroll class="w-scroll" scroll-y="true" if="{{!combat.active && !scene.active && !ending}}">
     <!-- 状态栏 -->
     <text class="w-status" style="color: {{theme.dim}};">{{statusText}}</text>
     <!-- 下滑提示 -->
@@ -8,8 +9,8 @@
 
     <!-- 地图视口 -->
     <div class="map">
-      <div class="map-row" for="{{row in grid}}">
-        <text class="cell" for="{{c in row.cells}}" style="color: {{c.color}};">{{c.ch}}</text>
+      <div class="map-row" for="{{row in grid}}" tid="id">
+        <text class="cell" for="{{c in row.cells}}" tid="id" style="color: {{c.color}};">{{c.ch}}</text>
       </div>
     </div>
 
@@ -36,32 +37,43 @@
 
     <!-- 日志 -->
     <div class="w-logs">
-      <text class="w-log" style="color: {{theme.text}};" for="{{l in logs}}">{{l.text}}</text>
+      <text class="w-log" style="color: {{theme.text}};" for="{{l in logs}}" tid="id">{{l.text}}</text>
     </div>
    </scroll>
 
-    <!-- 战斗弹窗 -->
+    <!-- 战斗弹窗（武器数量可能较多，内部滚动） -->
     <div class="overlay" if="{{combat.active}}" style="background-color: {{theme.bg}};">
-      <text class="ov-title" style="color: {{theme.accent}};">{{combat.name}}{{combat.stun > 0 ? '（眩晕）' : ''}}</text>
-      <text class="ov-text" style="color: {{theme.text}};">敌人 HP {{combat.hp}}/{{combat.maxhp}}　你 HP {{health}}/{{maxHealth}}</text>
-      <text class="ov-btn" for="{{w in combat.weapons}}"
-        style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}}; color: {{theme.text}}; opacity: {{w.disabled ? 0.4 : 1}};"
-        @click="useWeapon(w.id)">{{w.label}}</text>
-      <text class="ov-btn" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}}; color: {{theme.text}};" @click="flee">逃跑</text>
+      <scroll class="ov-scroll" scroll-y="true">
+        <text class="ov-title" style="color: {{theme.accent}};">{{combat.name}}{{combat.stun > 0 ? '（眩晕）' : ''}}</text>
+        <text class="ov-text" style="color: {{theme.text}};">敌人 HP {{combat.hp}}/{{combat.maxhp}}　你 HP {{health}}/{{maxHealth}}</text>
+        <text class="ov-btn" for="{{w in combat.weapons}}" tid="id"
+          style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}}; color: {{theme.text}}; opacity: {{w.disabled ? 0.4 : 1}};"
+          @click="useWeapon(w.id)">{{w.label}}</text>
+        <text class="ov-btn" for="{{h in combat.heals}}" tid="id"
+          style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}}; color: {{theme.gain}}; opacity: {{h.disabled ? 0.4 : 1}};"
+          @click="useHeal(h.id)">{{h.label}}</text>
+        <text class="ov-btn" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}}; color: {{theme.text}};" @click="flee">逃跑</text>
+      </scroll>
     </div>
 
     <!-- 地标/场景弹窗 -->
     <div class="overlay" if="{{scene.active}}" style="background-color: {{theme.bg}};">
-      <text class="ov-title" style="color: {{theme.accent}};">{{scene.title}}</text>
-      <text class="ov-text" style="color: {{theme.text}};">{{scene.text}}</text>
-      <text class="ov-btn" for="{{b in scene.buttons}}" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}}; color: {{theme.text}};" @click="sceneAction(b.id)">{{b.label}}</text>
+      <scroll class="ov-scroll" scroll-y="true">
+        <text class="ov-title" style="color: {{theme.accent}};">{{scene.title}}</text>
+        <text class="ov-text" style="color: {{theme.text}};">{{scene.text}}</text>
+        <text class="ov-btn" for="{{b in scene.buttons}}" tid="id"
+          style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}}; color: {{theme.text}}; opacity: {{b.disabled ? 0.4 : 1}};"
+          @click="sceneAction(b.id)">{{b.label}}</text>
+      </scroll>
     </div>
 
     <!-- 通关弹窗 -->
     <div class="overlay" if="{{ending}}" style="background-color: {{theme.bg}};">
-      <text class="ov-title" style="color: {{theme.accent}};">飞向群星</text>
-      <text class="ov-text" style="color: {{theme.text}};">核心重新轰鸣，星舰挣脱大地。荒原在脚下飞速退去，最终化作一片寂静的灰。前方，是无垠的星海。\n\n——通关——\n\n感谢游玩《手表版小黑屋》.</text>
-      <text class="ov-btn" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}}; color: {{theme.text}};" @click="leave">回到小黑屋</text>
+      <scroll class="ov-scroll" scroll-y="true">
+        <text class="ov-title" style="color: {{theme.accent}};">飞向群星</text>
+        <text class="ov-text" style="color: {{theme.text}};">核心重新轰鸣，星舰挣脱大地。荒原在脚下飞速退去，最终化作一片寂静的灰。前方，是无垠的星海。\n\n——通关——\n\n感谢游玩《手表版小黑屋》.</text>
+        <text class="ov-btn" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}}; color: {{theme.text}};" @click="leave">回到小黑屋</text>
+      </scroll>
     </div>
   </div>
 </template>
@@ -70,6 +82,8 @@
   import storage from '@system.storage'
   import router from '@system.router'
   import { THEMES } from '../themes.js'
+  import { SCENES, GAINS } from './scenes.js'
+  import { syncList } from '../perf.js'
 
   var SAVE_KEY = 'darkroom_save_v1'
   var RADIUS = 12
@@ -82,6 +96,9 @@
   var FIGHT_DELAY = 3
   var FIGHT_CHANCE = 0.2
   var MEAT_HEAL = 8
+  var MEDS_HEAL = 20
+  var EAT_CD = 5             // 战斗中吃熏肉的冷却回合
+  var MEDS_CD = 7            // 战斗中用药的冷却回合
 
   // 武器：dmg 伤害, cd 冷却回合, ranged 远程(消耗弹药), stun 眩晕(跳过敌人一次攻击)
   var WEAPONS = [
@@ -119,10 +136,26 @@
   var LAND_CHARS = 'ICSVOHYPBFMUXW'
 
   // 敌人池（按距离分档）
+  // lt 掉落表：[资源, 最小, 最大, 概率]
   var ENEMIES = {
-    1: [{ name: '咆哮的野兽', hp: [4, 6], dmg: 1 }, { name: '瘦弱的野狗', hp: [3, 5], dmg: 1 }, { name: '巨大的蜥蜴', hp: [5, 7], dmg: 1 }, { name: '成群的乌鸦', hp: [3, 4], dmg: 1 }],
-    2: [{ name: '形容枯槁的人', hp: [7, 9], dmg: 2 }, { name: '生疮的乞丐', hp: [6, 9], dmg: 2 }, { name: '变异的狼', hp: [8, 11], dmg: 2 }, { name: '徘徊的拾荒者', hp: [7, 10], dmg: 2 }],
-    3: [{ name: '蒙面的劫匪', hp: [10, 14], dmg: 3 }, { name: '褴褛的掠夺者', hp: [12, 16], dmg: 3 }, { name: '残暴的巨兽', hp: [13, 18], dmg: 4 }, { name: '溃逃的士兵', hp: [11, 15], dmg: 3 }]
+    1: [
+      { name: '咆哮的野兽', hp: [4, 6], dmg: 1, lt: [['fur', 1, 3, 1], ['meat', 1, 3, 1], ['teeth', 1, 3, 0.8]] },
+      { name: '瘦弱的野狗', hp: [3, 5], dmg: 1, lt: [['fur', 1, 2, 1], ['meat', 1, 3, 0.8]] },
+      { name: '巨大的蜥蜴', hp: [5, 7], dmg: 1, lt: [['scales', 1, 3, 1], ['meat', 1, 2, 0.5]] },
+      { name: '成群的乌鸦', hp: [3, 4], dmg: 1, lt: [['meat', 1, 2, 0.6], ['cloth', 1, 2, 0.4]] }
+    ],
+    2: [
+      { name: '形容枯槁的人', hp: [7, 9], dmg: 2, lt: [['cloth', 1, 3, 1], ['leather', 1, 2, 0.5], ['medicine', 1, 1, 0.2]] },
+      { name: '生疮的乞丐', hp: [6, 9], dmg: 2, lt: [['cloth', 1, 3, 0.8], ['charm', 1, 1, 0.3]] },
+      { name: '变异的狼', hp: [8, 11], dmg: 2, lt: [['fur', 2, 4, 1], ['teeth', 1, 3, 1], ['meat', 1, 3, 0.8]] },
+      { name: '徘徊的拾荒者', hp: [7, 10], dmg: 2, lt: [['leather', 1, 3, 1], ['cloth', 1, 3, 0.8], ['iron', 1, 3, 0.4]] }
+    ],
+    3: [
+      { name: '蒙面的劫匪', hp: [10, 14], dmg: 3, lt: [['leather', 2, 4, 1], ['bullets', 1, 4, 0.6], ['steel', 1, 3, 0.4]] },
+      { name: '褴褛的掠夺者', hp: [12, 16], dmg: 3, lt: [['leather', 2, 5, 1], ['teeth', 2, 5, 0.8], ['medicine', 1, 2, 0.3]] },
+      { name: '残暴的巨兽', hp: [13, 18], dmg: 4, lt: [['scales', 2, 5, 1], ['teeth', 3, 6, 1], ['fur', 3, 6, 0.8]] },
+      { name: '溃逃的士兵', hp: [11, 15], dmg: 3, lt: [['bullets', 2, 6, 1], ['steel', 1, 4, 0.6], ['cured meat', 1, 3, 0.5]] }
+    ]
   }
 
   function rnd(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a }
@@ -142,13 +175,13 @@
       water: 10, maxWater: 10,
       food: 0,
       canEat: false,
-      combat: { active: false, name: '', hp: 0, maxhp: 0, dmg: 0, tier: 1 },
+      combat: { active: false, name: '', hp: 0, maxhp: 0, dmg: 0, tier: 1, heals: [] },
       attackLabel: '攻击',
       scene: { active: false, kind: '', title: '', text: '', buttons: [] },
       ending: false,
       game: {}, stores: {},
       world: null,
-      _loaded: false
+      loaded: false
     },
 
     onInit() {
@@ -185,13 +218,13 @@
             self.game.world = self.world
           }
           self.syncCaps()
-          self._loaded = true
+          self.loaded = true
           self.render()
           self.log('你站在荒原上，小黑屋的微光在身后.')
           self.checkDevScene()
         },
         fail: function () {
-          self._loaded = true
+          self.loaded = true
         }
       })
     },
@@ -378,13 +411,15 @@
     eat() {
       if (this.food <= 0) { this.log('没有熏肉可吃了.'); return }
       this.food--
-      this.health = Math.min(this.maxHealth, this.health + MEAT_HEAL)
+      this.health = Math.min(this.maxHealth, this.health + this.meatHeal())
       this.persistSurvival()
       this.log('吃了点熏肉，恢复了体力.')
       this.render()
     },
 
     die() {
+      this._rsKind = null
+      this._rsNode = null
       this.log('你倒在了荒原上……再睁眼时，已回到小黑屋.')
       // 重置探险，回到村庄
       this.game.world = null
@@ -402,10 +437,54 @@
       var pool = ENEMIES[tier]
       var e = pool[rnd(0, pool.length - 1)]
       var hp = rnd(e.hp[0], e.hp[1])
-      this.combat = { active: true, name: e.name, hp: hp, maxhp: hp, dmg: e.dmg, tier: tier, stun: 0, weaponCd: {}, weapons: [] }
+      this.combat = {
+        active: true, name: e.name, hp: hp, maxhp: hp, dmg: e.dmg, tier: tier,
+        stun: 0, weaponCd: {}, weapons: [], healCd: { eat: 0, meds: 0 }, heals: [], loot: e.lt || []
+      }
       this.buildWeaponButtons()
+      this.buildHealButtons()
       this.log('遭遇了' + e.name + '！')
       this.render()
+    },
+    // 吃熏肉回血量（美食家技能翻倍，对应原版 World.meatHeal）
+    meatHeal() {
+      var perks = this.game.perks || {}
+      return MEAT_HEAL * (perks.gastronome ? 2 : 1)
+    },
+    buildHealButtons() {
+      var c = this.combat
+      var hc = c.healCd || { eat: 0, meds: 0 }
+      var btns = []
+      var eatLabel = '吃熏肉 +' + this.meatHeal()
+      if (hc.eat > 0) eatLabel += ' 冷却' + hc.eat
+      else if (this.food <= 0) eatLabel += ' 没带熏肉'
+      btns.push({ id: 'eat', label: eatLabel, disabled: hc.eat > 0 || this.food <= 0 })
+      if ((this.stores.medicine || 0) > 0 || hc.meds > 0) {
+        var medLabel = '用药 +' + MEDS_HEAL
+        if (hc.meds > 0) medLabel += ' 冷却' + hc.meds
+        btns.push({ id: 'meds', label: medLabel, disabled: hc.meds > 0 || (this.stores.medicine || 0) <= 0 })
+      }
+      c.heals = btns
+    },
+    useHeal(id) {
+      var c = this.combat
+      if (!c.active) return
+      if (!c.healCd) c.healCd = { eat: 0, meds: 0 }
+      if (id === 'eat') {
+        if (c.healCd.eat > 0 || this.food <= 0) return
+        this.food--
+        this.health = Math.min(this.maxHealth, this.health + this.meatHeal())
+        c.healCd.eat = EAT_CD
+        this.log('嚼了几口熏肉，缓过一口气.')
+      } else {
+        if (c.healCd.meds > 0 || (this.stores.medicine || 0) <= 0) return
+        this.addStore('medicine', -1)
+        this.health = Math.min(this.maxHealth, this.health + MEDS_HEAL)
+        c.healCd.meds = MEDS_CD
+        this.log('用了一剂药，伤口迅速收拢.')
+      }
+      this.persistSurvival()
+      this.enemyTurn(c)
     },
     useWeapon(id) {
       var c = this.combat
@@ -428,6 +507,10 @@
     enemyTurn(c) {
       // 冷却递减
       for (var k in c.weaponCd) if (c.weaponCd[k] > 0) c.weaponCd[k]--
+      if (c.healCd) {
+        if (c.healCd.eat > 0) c.healCd.eat--
+        if (c.healCd.meds > 0) c.healCd.meds--
+      }
       if (c.stun > 0) { c.stun--; this.log('敌人还在眩晕中.') }
       else if (Math.random() < 0.8) {
         this.health -= c.dmg
@@ -436,56 +519,162 @@
         if (this.health <= 0) { this.combat = { active: false }; this.die(); return }
       } else this.log('它扑空了.')
       this.buildWeaponButtons()
+      this.buildHealButtons()
       this.combat = c
       this.render()
     },
     flee() {
       var c = this.combat
-      if (Math.random() < 0.6) { this.log('你成功脱身了.'); this.combat = { active: false } }
-      else {
+      if (Math.random() < 0.6) {
+        this.log('你成功脱身了.')
+        this.combat = { active: false }
+        // 场景战斗中逃跑 = 放弃这个地标，可以之后再来
+        this._rsKind = null
+        this._rsNode = null
+      } else {
         this.health -= c.dmg
         this.persistSurvival()
         this.log('逃跑失败，挨了一下.')
         if (this.health <= 0) { this.combat = { active: false }; this.die(); return }
         for (var k in c.weaponCd) if (c.weaponCd[k] > 0) c.weaponCd[k]--
+        if (c.healCd) {
+          if (c.healCd.eat > 0) c.healCd.eat--
+          if (c.healCd.meds > 0) c.healCd.meds--
+        }
         this.buildWeaponButtons()
+        this.buildHealButtons()
         this.combat = c
       }
       this.render()
     },
     winFight() {
-      var tier = this.combat.tier
+      var lt = this.combat.loot || []
       this.combat = { active: false }
-      var pool = tier === 1 ? ['fur', 'meat'] : (tier === 2 ? ['fur', 'meat', 'teeth', 'leather'] : ['teeth', 'scales', 'leather', 'cloth'])
-      var got = {}
-      var n = rnd(1, 3)
-      for (var i = 0; i < n; i++) { var k = pool[rnd(0, pool.length - 1)]; got[k] = (got[k] || 0) + rnd(1, 5) }
       var msgs = []
-      for (var key in got) { this.addStore(key, got[key]); msgs.push((this.resName(key)) + '+' + got[key]) }
-      this.log('击败了敌人，搜得 ' + msgs.join('，') + '.')
+      for (var i = 0; i < lt.length; i++) {
+        var e = lt[i]
+        if (Math.random() > e[3]) continue
+        var n = rnd(e[1], e[2])
+        if (n <= 0) continue
+        this.addStore(e[0], n)
+        msgs.push(this.resName(e[0]) + '+' + n)
+      }
+      this.log(msgs.length ? ('击败了敌人，搜得 ' + msgs.join('，') + '.') : '击败了敌人，身上什么也没有.')
+      // 多幕场景中的战斗：胜利后回到指定节点继续
+      if (this._rsKind) {
+        var kind = this._rsKind, node = this._rsNode
+        this._rsKind = null
+        this._rsNode = null
+        if (node) { this.openScene(kind, node); return }
+        this.finishLandmark()
+        return
+      }
       this.render()
     },
 
     // ---------- 地标 ----------
     landmarkText(t) {
-      var m = {
-        I: '矿井黑黢黢的，铁色的矿脉还能开采.', C: '焦黑的矿井里，煤层依旧厚实.', S: '刺鼻的硫磺味从矿井深处涌出.',
-        V: '洞穴深处传来滴水声，或许藏着些什么.', O: '小镇空无一人，断壁残垣间也许有遗留物资.',
-        H: '一栋破败的老屋，门虚掩着.', Y: '一座倾颓的废城，危险与机遇并存.',
-        P: '一处废弃的补给前哨，水箱里似乎还有水.', B: '一个幽深的钻孔，底部泛着奇异的光.',
-        F: '古老的战场，遍地是锈蚀的兵器残骸.', M: '阴森的沼泽，瘴气弥漫，脚下泥泞.',
-        U: '一座被毁的村落，焦土之下或有幸存的补给.'
-      }
-      return m[t] || ''
+      return (t === 'P') ? '一处废弃的补给前哨，水箱里似乎还有水.' : ''
     },
     enterLandmark(t, x, y) {
       if (t === 'W') { this.openShip(); return }
+      if (SCENES[t]) { this._once = {}; this.openScene(t, 'a'); return }
       this.scene = {
         active: true, kind: t, title: LANDMARKS[t].name, text: this.landmarkText(t),
         buttons: [{ id: 'enter', label: (t === 'P') ? '补充饮水' : '进入探索' }, { id: 'leave', label: '离开' }]
       }
     },
+    // ---------- 多幕场景 ----------
+    // 打开 SCENES[kind][node]，按钮 id 就是选项下标
+    openScene(kind, node) {
+      var tbl = SCENES[kind]
+      if (!tbl || !tbl[node]) { this.finishLandmark(); return }
+      var n = tbl[node]
+      var once = this._once || {}
+      var btns = []
+      for (var i = 0; i < n[1].length; i++) {
+        var o = n[1][i]
+        // `>!x` 的一次性分支走过一次就不再列出
+        var bang = o[1].indexOf('>!')
+        if (bang >= 0 && once[o[1].substring(bang + 2)]) continue
+        var label = o[0]
+        var dis = false
+        if (o[2]) {
+          var cp = o[2].split(':')
+          label += '（' + this.resName(cp[0]) + cp[1] + '）'
+          dis = (this.stores[cp[0]] || 0) < parseInt(cp[1], 10)
+        }
+        btns.push({ id: String(i), label: label, disabled: dis })
+      }
+      this.scene = { active: true, kind: kind, node: node, title: LANDMARKS[kind].name, text: n[0], buttons: btns }
+      this.render()
+    },
+    // 执行一条指令，见 scenes.js 顶部的格式说明
+    sceneStep(idx) {
+      var kind = this.scene.kind
+      var opt = SCENES[kind][this.scene.node][1][idx]
+      if (!opt) return
+      var cmd = opt[1]
+      // 代价：资源不够直接忽略这次点击（按钮本来就是暗的）
+      if (opt[2]) {
+        var cp = opt[2].split(':')
+        var need = parseInt(cp[1], 10)
+        if ((this.stores[cp[0]] || 0) < need) return
+        this.addStore(cp[0], -need)
+      }
+      var next = null
+      var gt = cmd.indexOf('>')
+      if (gt >= 0) { next = cmd.substring(gt + 1); cmd = cmd.substring(0, gt) }
+      if (next && next.charAt(0) === '!') {
+        next = next.substring(1)
+        if (!this._once) this._once = {}
+        this._once[next] = 1
+      }
+      var op = cmd.charAt(0)
+      // 中途离开：地标不打叉，可以之后再来；顺带清掉开发者测试标记
+      if (op === 'E') { this._devTest = false; this.scene = { active: false }; this.render(); return }
+      if (op === 'L') {
+        var lp = cmd.split(':')                 // L:键1,键2:最小-最大
+        var keys = lp[1].split(',')
+        var amt = lp[2].split('-')
+        this.loot(keys, 1, keys.length, parseInt(amt[0], 10), parseInt(amt[1], 10), '')
+      } else if (op === 'H') {
+        var hr = cmd.split(':')[1].split('-')
+        this.hurt(rnd(parseInt(hr[0], 10), parseInt(hr[1], 10)), '')
+        if (this.health <= 0) { this.scene = { active: false }; this.die(); return }
+      } else if (op === 'M') {
+        var mk = cmd.substring(2)
+        if (!this.game.buildings) this.game.buildings = {}
+        this.game.buildings[mk] = 1
+        this.log(GAINS[mk] || '')
+      } else if (op === 'K') {
+        var pk = cmd.substring(2)
+        if (!this.game.perks) this.game.perks = {}
+        this.game.perks[pk] = 1
+        this.log(GAINS[pk] || '')
+      } else if (op === 'F') {
+        this._rsKind = kind
+        this._rsNode = next
+        this.scene = { active: false }
+        this.startFight(parseInt(cmd.split(':')[1], 10) || 1)
+        return
+      }
+      if (next) this.openScene(kind, next)
+      else this.finishLandmark()
+    },
+    // 地标探索完毕：地图上打叉，不再重复进入
+    finishLandmark() {
+      this.scene = { active: false }
+      if (!this._devTest && this.world) {
+        this.world.map = this.setTile(this.world.map, this.world.x, this.world.y, '#')
+      }
+      this._devTest = false
+      this.save()
+      this.render()
+    },
+
     sceneAction(id) {
+      if (this.scene.node) { this.sceneStep(parseInt(id, 10)); return }
       var t = this.scene.kind
       var x = this.world.x, y = this.world.y
       if (id === 'leave') { this.scene = { active: false }; this.render(); return }
@@ -507,50 +696,14 @@
         router.push({ uri: 'darkroom/space' })
         return
       }
-      var visited = true
-      if (t === 'I' || t === 'C' || t === 'S') {
-        var mineBuild = { I: 'iron mine', C: 'coal mine', S: 'sulphur mine' }[t]
-        var res = { I: 'iron', C: 'coal', S: 'sulphur' }[t]
-        this.game.buildings[mineBuild] = 1
-        this.addStore(res, rnd(20, 40))
-        this.log('清理了矿井！村里可以派矿工来此开采了.')
-      } else if (t === 'V') {
-        this.loot(['fur', 'teeth', 'scales', 'leather', 'medicine'], 1, 3, 3, 10, '在洞穴里')
-      } else if (t === 'O') {
-        this.loot(['cloth', 'leather', 'medicine', 'fur'], 2, 3, 2, 8, '在废墟里')
-      } else if (t === 'H') {
-        this.loot(['wood', 'cloth', 'fur'], 1, 2, 3, 12, '在老屋里')
-      } else if (t === 'Y') {
-        this.hurt(rnd(2, 5), '城里的瓦砾割伤了你')
-        this.loot(['steel', 'leather', 'medicine', 'teeth', 'cloth'], 2, 4, 3, 12, '在废城深处')
-      } else if (t === 'P') {
+      // 只剩补给前哨走这条单动作路径，其余地标都是 SCENES 里的多幕场景
+      if (t === 'P') {
         this.water = this.maxWater
         this.persistSurvival()
         this.addStore('cured meat', rnd(2, 6))
         this.log('在前哨补满了饮水，还找到一些熏肉.')
-      } else if (t === 'B') {
-        this.loot(['scales', 'teeth', 'charm', 'sulphur'], 1, 3, 4, 12, '从钻孔深处')
-        if (Math.random() < 0.5) this.addStore('alien alloy', rnd(3, 8))
-      } else if (t === 'F') {
-        this.hurt(rnd(1, 4), '锈蚀的残骸划伤了你')
-        this.loot(['bullets', 'steel', 'iron', 'leather'], 2, 3, 4, 14, '在战场上')
-      } else if (t === 'M') {
-        this.hurt(rnd(3, 7), '沼泽的瘴气侵蚀着你')
-        this.loot(['medicine', 'leather', 'scales'], 1, 2, 3, 8, '在沼泽里')
-      } else if (t === 'U') {
-        this.loot(['cured meat', 'wood', 'fur', 'medicine'], 2, 4, 4, 16, '在废村里')
-      } else if (t === 'X') {
-        if (this.health <= 0) return
-        this.hurt(rnd(4, 9), '战舰守卫给你留下了伤口')
-        if (this.health <= 0) { this.scene = { active: false }; this.die(); return }
-        this.loot(['steel', 'bullets', 'sulphur', 'iron'], 3, 5, 6, 18, '从战舰残骸')
-        this.addStore('alien alloy', rnd(10, 25))
-        if (!(this.game.buildings.fabricator > 0)) {
-          this.game.buildings.fabricator = 1
-          this.log('你拆下了一台完好的外星制造机！现在能造高级装备了.')
-        }
       }
-      if (visited && !this._devTest) this.world.map = this.setTile(this.world.map, x, y, '#')
+      if (!this._devTest) this.world.map = this.setTile(this.world.map, x, y, '#')
       this._devTest = false
       this.scene = { active: false }
       this.save()
@@ -625,7 +778,7 @@
         }
         rows.push({ id: String(dy), cells: cells })
       }
-      this.grid = rows
+      syncList(this.grid, rows)
       this.canEat = this.food > 0
       this.statusText = '体力 ' + this.health + '/' + this.maxHealth + '　水 ' + this.water + '　熏肉 ' + this.food
     },
@@ -638,15 +791,41 @@
     },
 
     // ---------- 存档 / 退出 ----------
-    save() {
-      if (!this._loaded) return
+    // 行走时每步都写一次全量存档在手表上是明显的卡顿源；这里合并 3 秒内的多次保存，
+    // 离开/隐藏/销毁时立即落盘，保证不丢进度。
+    save(force) {
+      if (!this.loaded) return
       if (this.world) this.game.world = this.world
       this.persistSurvival()
-      storage.set({ key: SAVE_KEY, value: JSON.stringify({ game: this.game, stores: this.stores, seenForest: true, tab: 'outside' }) })
+      var payload = JSON.stringify({ game: this.game, stores: this.stores, seenForest: true, tab: 'outside' })
+      if (payload === this._lastSave) return
+      this._pendingSave = payload
+      if (!force && this._lastSaveAt && Date.now() - this._lastSaveAt < 3000) {
+        if (!this._saveTimer) {
+          var self = this
+          this._saveTimer = setTimeout(function () { self._saveTimer = null; self.flushSave() }, 3000)
+        }
+        return
+      }
+      this.flushSave()
+    },
+    flushSave() {
+      if (this._saveTimer) { clearTimeout(this._saveTimer); this._saveTimer = null }
+      var payload = this._pendingSave
+      if (!payload || payload === this._lastSave) return
+      this._lastSave = payload
+      this._lastSaveAt = Date.now()
+      storage.set({ key: SAVE_KEY, value: payload })
       storage.set({ key: 'darkroom_dirty', value: '1' })
     },
+    onHide() {
+      this.flushSave()
+    },
+    onDestroy() {
+      this.flushSave()
+    },
     leave() {
-      this.save()
+      this.save(true)
       router.back()
     }
   }
@@ -760,10 +939,15 @@
     width: 100%;
     height: 100%;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     padding-left: 68px;
     padding-right: 68px;
+  }
+
+  .ov-scroll {
+    flex: 1;
+    flex-direction: column;
+    padding-top: 56px;
+    padding-bottom: 56px;
   }
 
   .ov-title {

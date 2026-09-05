@@ -5,6 +5,7 @@
 
       <text class="about-game">手表版小黑屋</text>
       <text class="about-sub">移植自 A Dark Room（MIT）</text>
+      <text class="about-version">版本 {{version}}</text>
 
       <div class="qr-wrap">
         <image class="qr" src="/common/qr.png"></image>
@@ -29,8 +30,12 @@
 
 <script>
   import router from '@system.router'
+  import manifest from '../../manifest.json'
 
   export default {
+    private: {
+      version: manifest.versionName
+    },
     back() { router.back() }
   }
 </script>
@@ -48,6 +53,13 @@
   .about-sub {
     color: #888888;
     font-size: 22px;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+
+  .about-version {
+    color: #666666;
+    font-size: 20px;
     text-align: center;
     margin-bottom: 20px;
   }

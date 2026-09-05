@@ -19,7 +19,7 @@
 
       <!-- 互动按钮区域 -->
       <div class="buttons">
-        <div class="btn" for="{{btn in buttons}}"
+        <div class="btn" for="{{btn in buttons}}" tid="id"
           style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}}; opacity: {{btn.disabled ? 0.4 : 1}};"
           @click="onButton(btn.id)">
           <text class="btn-label" style="color: {{theme.text}};">{{btn.label}}</text>
@@ -36,7 +36,7 @@
           <text class="worker-name" style="color: {{theme.text}};">伐木者</text>
           <text class="worker-free" style="color: {{theme.dim}};">{{gatherers}}</text>
         </div>
-        <div class="worker-row" for="{{w in workerRows}}">
+        <div class="worker-row" for="{{w in workerRows}}" tid="key">
           <text class="worker-name" style="color: {{theme.text}};">{{w.name}}</text>
           <div class="worker-ctrl">
             <text class="wbtn" style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}}; color: {{theme.text}};"
@@ -51,7 +51,7 @@
       <!-- 拥有的建筑/装备（生火间标签） -->
       <block if="{{tab === 'room' && buildingList.length > 0}}">
         <div class="divider" style="background-color: {{theme.divider}};"></div>
-        <div class="store-row" for="{{b in buildingList}}">
+        <div class="store-row" for="{{b in buildingList}}" tid="name">
           <text class="store-name" style="color: {{theme.dim}};">{{b.name}}</text>
           <text class="store-val" style="color: {{theme.dim}};">{{b.count}}</text>
         </div>
@@ -61,7 +61,7 @@
 
       <!-- 数值面板 -->
       <div class="stores">
-        <div class="store-row" for="{{s in storeList}}">
+        <div class="store-row" for="{{s in storeList}}" tid="name">
           <text class="store-name" style="color: {{theme.text}};">{{s.name}}</text>
           <text class="store-val"
             style="color: {{s.flash === 'gain' ? theme.gain : (s.flash === 'lose' ? theme.lose : theme.text)}};">{{s.value}}</text>
@@ -72,7 +72,7 @@
 
       <!-- 日志区域 -->
       <div class="logs">
-        <text class="log" style="color: {{theme.text}};" for="{{item in logs}}">{{item.text}}</text>
+        <text class="log" style="color: {{theme.text}};" for="{{item in logs}}" tid="id">{{item.text}}</text>
       </div>
 
       <!-- 设置入口 -->
@@ -86,7 +86,7 @@
       <scroll class="event-body" scroll-y="true">
         <text class="event-title" style="color: {{theme.accent}};">{{event.title}}</text>
         <text class="event-text" style="color: {{theme.text}};">{{event.text}}</text>
-        <div class="event-btn" for="{{b in event.buttons}}"
+        <div class="event-btn" for="{{b in event.buttons}}" tid="id"
           style="background-color: {{theme.btnBg}}; border-color: {{theme.btnBorder}}; opacity: {{b.disabled ? 0.4 : 1}};"
           @click="eventAction(b.id)">
           <text class="event-btn-text" style="color: {{theme.text}};">{{b.label}}</text>
@@ -100,6 +100,7 @@
   import storage from '@system.storage'
   import router from '@system.router'
   import { THEMES } from './themes.js'
+  import { syncList } from './perf.js'
 
   // ---- 常量 ----
   var SAVE_KEY = 'darkroom_save_v1'
@@ -232,7 +233,7 @@
       theme: THEMES[0],
       speed: 1.0,
       dropRate: 1.0,
-      _acc: 0,
+      acc: 0,
       roomTitle: '生火间',
       outsideTitle: '静谧森林',
       buttons: [],
@@ -260,9 +261,9 @@
       stores: {},
       cd: { stoke: 0, gather: 0, traps: 0 },
       t: { fireCool: FIRE_COOL, roomWarm: ROOM_WARM, builder: BUILDER_DELAY, income: INCOME_DELAY, pop: 60, event: 240 },
-      _flash: {},
-      _flashTimeout: null,
-      _loaded: false
+      flash: {},
+      flashTimer: null,
+      loaded: false
     },
 
     onInit() {
@@ -270,7 +271,7 @@
       this.loadSettings()
     },
     onReady() {
-      this._acc = 0
+      this.acc = 0
       this._running = true
       this.updateClock()
       this.render()
@@ -324,22 +325,23 @@
 
     reloadSave() {
       var self = this
-      self._loaded = false
+      self.loaded = false
       storage.get({
         key: SAVE_KEY,
         success: function (val) {
-          if (!val) { self._loaded = true; return }
+          if (!val) { self.loaded = true; return }
           try {
             var d = JSON.parse(val)
             if (d.game) self.game = d.game
             if (d.stores) self.stores = d.stores
+            self._lastSave = null
             self.seenForest = !!d.seenForest
             self.normalizeGame()
-            self._loaded = true
+            self.loaded = true
             self.render()
-          } catch (e) { self._loaded = true }
+          } catch (e) { self.loaded = true }
         },
-        fail: function () { self._loaded = true }
+        fail: function () { self.loaded = true }
       })
     },
 
@@ -355,6 +357,7 @@
     },
 
     resetState() {
+      this._lastSave = null
       this.game = {
         fire: 0, temperature: 0, builder: -1, fireLit: false, builderTimer: 0,
         buildings: {}, population: 0, workers: {}, perks: {}, unlockedCrafts: {}
@@ -365,7 +368,7 @@
       this.cd = { stoke: 0, gather: 0, traps: 0 }
       this.t = { fireCool: FIRE_COOL, roomWarm: ROOM_WARM, builder: BUILDER_DELAY, income: INCOME_DELAY, pop: 60, event: 240 }
       this.logs = []
-      this._flash = {}
+      this.flash = {}
       this.event = { active: false, kind: '', title: '', text: '', buttons: [] }
       this.log('黑暗中，火堆早已熄灭，房间冰冷.')
       this.render()
@@ -404,12 +407,12 @@
       }
       var sp = this.speed
       if (!sp || sp <= 0) sp = 1
-      if (typeof this._acc !== 'number') this._acc = 0
-      this._acc += sp
+      if (typeof this.acc !== 'number') this.acc = 0
+      this.acc += sp
       var guard = 0
       var stateChanged = false
-      while (this._acc >= 1 && guard < 20) {
-        this._acc -= 1
+      while (this.acc >= 1 && guard < 20) {
+        this.acc -= 1
         guard++
         if (this.stepSecond()) {
           stateChanged = true
@@ -418,18 +421,42 @@
       this.updateClock()
       if (stateChanged) {
         this.render()
+      } else if (this._cdChanged) {
+        // 冷却刚归零时按钮可用性/花费可能变化，走一次完整渲染
+        if (this._cdHitZero) this.render()
+        else this.refreshCooldowns()
       }
+      this._cdChanged = false
+      this._cdHitZero = false
       this._saveCounter = (this._saveCounter || 0) + 1
       if (this._saveCounter >= 10) { this._saveCounter = 0; this.save() }
+    },
+
+    // 只把冷却秒数写回已存在的按钮，不重建列表
+    refreshCooldowns() {
+      var cd = this.cd
+      var list = this.buttons
+      for (var i = 0; i < list.length; i++) {
+        var b = list[i]
+        var v = -1
+        if (b.id === 'stoke') v = cd.stoke
+        else if (b.id === 'gather') v = cd.gather
+        else if (b.id === 'traps') v = cd.traps
+        else continue
+        if (b.cd !== v) b.cd = v
+        var dis = v > 0
+        if (b.disabled !== dis) b.disabled = dis
+      }
     },
 
     stepSecond() {
       var g = this.game
       var cd = this.cd
       var changed = false
-      if (cd.stoke > 0) { cd.stoke--; changed = true }
-      if (cd.gather > 0) { cd.gather--; changed = true }
-      if (cd.traps > 0) { cd.traps--; changed = true }
+      // 冷却倒数只影响按钮上的秒数，不需要重建整个列表
+      if (cd.stoke > 0) { cd.stoke--; this._cdChanged = true; if (cd.stoke === 0) this._cdHitZero = true }
+      if (cd.gather > 0) { cd.gather--; this._cdChanged = true; if (cd.gather === 0) this._cdHitZero = true }
+      if (cd.traps > 0) { cd.traps--; this._cdChanged = true; if (cd.traps === 0) this._cdHitZero = true }
 
       // 火焰衰减
       if (g.fire > 0) {
@@ -663,8 +690,8 @@
       var cur = this.stores[k] || 0
       this.stores[k] = cur + n
       if (this.stores[k] < 0) this.stores[k] = 0
-      if (n > 0) this._flash[k] = 'gain'
-      else if (n < 0) this._flash[k] = 'lose'
+      if (n > 0) this.flash[k] = 'gain'
+      else if (n < 0) this.flash[k] = 'lose'
       if (k === 'wood') this.seenForest = true
     },
     addRaw(k, n) {
@@ -1015,7 +1042,7 @@
           list.push({ id: 'embark', label: (g.world && g.world.map) ? '继续探索' : '出发探索', cd: 0, disabled: false, cost: '' })
         }
       }
-      this.buttons = list
+      syncList(this.buttons, list)
     },
 
     buildStores() {
@@ -1026,17 +1053,20 @@
         if (typeof this.stores[k] === 'undefined') continue
         var v = Math.floor(this.stores[k])
         if (v <= 0 && k !== 'wood') continue
-        var flashVal = this._flash[k] || ''
+        var flashVal = this.flash[k] || ''
         if (flashVal) hasFlash = true
         list.push({ name: RES_NAME[k], value: v, flash: flashVal })
       }
-      this.storeList = list
+      syncList(this.storeList, list)
       if (hasFlash) {
         var self = this
-        if (this._flashTimeout) clearTimeout(this._flashTimeout)
-        this._flashTimeout = setTimeout(function () {
-          self._flash = {}
-          self.render()
+        if (this.flashTimer) clearTimeout(this.flashTimer)
+        this.flashTimer = setTimeout(function () {
+          self.flash = {}
+          var rows = self.storeList
+          for (var j = 0; j < rows.length; j++) {
+            if (rows[j].flash) rows[j].flash = ''
+          }
         }, 600)
       }
     },
@@ -1053,7 +1083,7 @@
       for (var j = 0; j < PERKS.length; j++) {
         if (perks[PERKS[j].key]) list.push({ name: '技能·' + PERKS[j].name, count: '✓' })
       }
-      this.buildingList = list
+      syncList(this.buildingList, list)
     },
 
     buildVillage() {
@@ -1070,7 +1100,7 @@
         if (!(g.buildings[w.need] > 0)) continue
         rows.push({ key: w.key, name: w.name, count: g.workers[w.key] || 0 })
       }
-      this.workerRows = rows
+      syncList(this.workerRows, rows)
     },
 
     // ---------- 日志 ----------
@@ -1083,11 +1113,11 @@
 
     // ---------- 存档 ----------
     save() {
-      if (!this._loaded) return
-      storage.set({
-        key: SAVE_KEY,
-        value: JSON.stringify({ game: this.game, stores: this.stores, seenForest: this.seenForest, tab: this.tab })
-      })
+      if (!this.loaded) return
+      var payload = JSON.stringify({ game: this.game, stores: this.stores, seenForest: this.seenForest, tab: this.tab })
+      if (payload === this._lastSave) return
+      this._lastSave = payload
+      storage.set({ key: SAVE_KEY, value: payload })
     },
     load() {
       var self = this
@@ -1107,12 +1137,12 @@
           } else {
             self.log('黑暗中，火堆早已熄灭，房间冰冷.')
           }
-          self._loaded = true
+          self.loaded = true
           self.render()
         },
         fail: function () {
           self.log('黑暗中，火堆早已熄灭，房间冰冷.')
-          self._loaded = true
+          self.loaded = true
           self.render()
         }
       })
